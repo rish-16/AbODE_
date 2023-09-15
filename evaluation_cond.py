@@ -62,45 +62,45 @@ Perplexity = []
 PPL_final = []
 RMSD_final = []
 
-for idx,batch in enumerate(Test_loader):
-            data = batch.x.to(device)
-            t = torch.tensor(t_space).to(device)
-            params_list = [batch.edge_index.to(device),batch.order.to(device),batch.a_index.to(device)]
-            model.update_param(params_list)
-            options = {
-                'dtype': torch.float64,
-                # 'first_step': 1.0e-9,
-                # 'grid_points': t,
-            }
+for idx, batch in enumerate(Test_loader):
+    data = batch.x.to(device)
+    t = torch.tensor(t_space).to(device)
+    params_list = [batch.edge_index.to(device),batch.order.to(device),batch.a_index.to(device)]
+    model.update_param(params_list)
+    options = {
+        'dtype': torch.float64,
+        # 'first_step': 1.0e-9,
+        # 'grid_points': t,
+    }
 
-            adjoint_options = {
-                'norm': "seminorm"
-            }
+    adjoint_options = {
+        'norm': "seminorm"
+    }
 
-            y_pd = odeint(
-               model, data, t, method=args.solver, 
-                rtol=args.rtol, atol=args.atol,
-                options=options
-            ) # The ODE-function to solve the ODE-system
-            
-            y_gt = batch.y.to(device)
-            antigen_len = []
-            for entry in batch.ag_len.numpy().tolist():
-                antigen_len.append(entry[0])
+    y_pd = odeint(
+        model, data, t, method=args.solver, 
+        rtol=args.rtol, atol=args.atol,
+        options=options
+    ) # The ODE-function to solve the ODE-system
+    
+    y_gt = batch.y.to(device)
+    antigen_len = []
+    for entry in batch.ag_len.numpy().tolist():
+        antigen_len.append(entry[0])
 
-            antibody_len = []
-            for entry in batch.ab_len.numpy().tolist():
-                antibody_len.append(entry[0])
-                
-            final_pred = get_antibody_entries(y_pd[-1],batch.batch,antibody_len,antigen_len) # get antibody entries from the total graph
-            rmsd_n,rmsd_ca,rmsd_c,acc,rmsd_cart_ca = evaluate_rmsd_with_sidechains_cond_angle(final_pred,y_gt,batch.first_res) # metric function to calculate the metrics
-            ppl_pred.append(acc)
-            rmsd_pred.append(rmsd_ca)
-            RMSD_test_n.append(rmsd_n)
-            RMSD_test_ca.append(rmsd_ca)
-            RMSD_test_ca_cart.append(rmsd_cart_ca)
-            RMSD_test_c.append(rmsd_c)
-            Perplexity.append(acc)
+    antibody_len = []
+    for entry in batch.ab_len.numpy().tolist():
+        antibody_len.append(entry[0])
+        
+    final_pred = get_antibody_entries(y_pd[-1],batch.batch,antibody_len,antigen_len) # get antibody entries from the total graph
+    rmsd_n,rmsd_ca,rmsd_c,acc,rmsd_cart_ca = evaluate_rmsd_with_sidechains_cond_angle(final_pred,y_gt,batch.first_res) # metric function to calculate the metrics
+    ppl_pred.append(acc)
+    rmsd_pred.append(rmsd_ca)
+    RMSD_test_n.append(rmsd_n)
+    RMSD_test_ca.append(rmsd_ca)
+    RMSD_test_ca_cart.append(rmsd_cart_ca)
+    RMSD_test_c.append(rmsd_c)
+    Perplexity.append(acc)
 
 RMSD_test_arr_n = np.array(RMSD_test_n).reshape(-1,1) 
 RMSD_test_arr_ca = np.array(RMSD_test_ca).reshape(-1,1)

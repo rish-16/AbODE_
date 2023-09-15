@@ -616,14 +616,12 @@ def loss_function_vm_with_side_chains(y_pred,y_true):
     nll_cart = - cart_lkl.log_prob(diff_cart).view(-1,9)
     loss_cart = torch.mean(nll_cart,dim=0).sum()
     
-    
-    
-    
     #print("predicted",pred_polar_coord)
     #print("truth",truth_polar_coord)
     #print("radius loss",loss_val)
     #rint("angle nll loss",total_angle_loss)
     #print("cart loss",loss_cart)
+    
     total_loss = loss_ce + 0.8*(loss_val + total_angle_loss) #+ 0.8*loss_cart
     
     return total_loss
