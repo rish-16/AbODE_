@@ -20,20 +20,20 @@ from scipy.stats import vonmises
 from scipy.special import softmax
 
 def loss_function_polar(y_pred, y_true):
-    pred_labels = y_pred[:,:20].view(-1,20)
-    truth_labels = y_true[:,:20].view(-1,20)
+    pred_labels = y_pred[:,:28].view(-1, 28)
+    truth_labels = y_true[:,:28].view(-1, 28)
     
     celoss = nn.CrossEntropyLoss()
     loss_ce = celoss(pred_labels,truth_labels)
     
-    pred_r = y_pred[:,20].view(-1,1)
-    true_r = y_true[:,20].view(-1,1)
+    pred_r = y_pred[:,28].view(-1,1)
+    true_r = y_true[:,28].view(-1,1)
     
     r_loss = nn.SmoothL1Loss(reduction='mean')
     loss_val = r_loss(pred_r,true_r)
     
-    pred_angle = y_pred[:,21:23].view(-1,2)
-    true_angle = y_true[:,21:23].view(-1,2)
+    pred_angle = y_pred[:,29:31].view(-1,2)
+    true_angle = y_true[:,29:31].view(-1,2)
     
     diff_angle = pred_angle - true_angle
     loss_per_angle = torch.mean(1 - torch.square(torch.cos(diff_angle)),0).view(-1,2)
@@ -87,7 +87,7 @@ def process_data_mda(path):
 
         node_features = torch.tensor(node_features)
 
-        edge_index = radius_graph(coords, r=5, loop=False)
+        edge_index = radius_graph(coords_concat_ca, r=5, loop=False)
         
         # data = Data(x=coords_final, h=node_features, y=target_features, edge_index=edge_index)
         data = {
@@ -122,6 +122,17 @@ def get_graph_data_pyg(mda_data):
 
         # s_i = <r_i, a_i, g_i>
         peptide_pos_features = torch.cat((r_norm, mid_angle, normal_angle), dim=2).view(-1, 9) # s_i
+
+        # edge_s = []
+        # edge_f = []
+        # #edges_ab = radius_graph(torch.tensor(C_alpha_ab),r=10,loop=True)
+        # for idx_start in range(len(peptide_pos_features)):
+        #     for idx_end in range(len(peptide_pos_features)):
+        #         if idx_start != idx_end:
+        #             edge_s.append(idx_start)
+        #             edge_f.append(idx_end)
+        
+        # edges_ab = torch.tensor([edge_s,edge_f])
 
         label_features = record['aa']
         assert label_features.size(0) == peptide_pos_features.size(0), f"size mismatch {label_features.shape} AND {peptide_pos_features.shape}"

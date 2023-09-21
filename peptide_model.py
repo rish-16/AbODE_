@@ -19,6 +19,11 @@ class PeptODE_uncond(nn.Module):
         layers_mlp.append(tg.nn.TransformerConv(128, 256, heads=1))
         layers_mlp.append(tg.nn.TransformerConv(256, 64, heads=1))
         layers_mlp.append(tg.nn.TransformerConv(64, c_in, heads=1))
+
+        # layers_mlp.append(gvpgnn.EGNNLayer(c_in+1))
+        # layers_mlp.append(gvpgnn.EGNNLayer(128))
+        # layers_mlp.append(gvpgnn.EGNNLayer(128))
+        # layers_mlp.append(gvpgnn.EGNNLayer(c_in))
         
         activation_fns.append(nn.ReLU())
         activation_fns.append(nn.Sigmoid())
@@ -160,9 +165,9 @@ class PeptODE_uncond(nn.Module):
         # final_edge_feature = torch.cat([spatial_diff,node_label_ag,rbf_weight,r_ij_vector,orient_features,oriented_vector],dim=1).float()
         
         dx = data.float()
+        # h = dx.float()
         tt = torch.ones_like(dx[:, :1]) * t
         dx_final = torch.cat([tt.float(), dx], 1)
-        print (dx_final.shape)
         
         for l,layer in enumerate(self.layer_mlp):
             dx_final = layer(dx_final, edge_index=Edge_index)

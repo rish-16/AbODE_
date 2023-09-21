@@ -19,8 +19,8 @@ peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("
 n_instances = len(peptide_data)
 train_size = int(0.8 * n_instances)
 peptide_data_train, peptide_data_test = peptide_data[:train_size], peptide_data[train_size:]
-train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=64)
-test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=64)
+train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=1)
+test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 SOLVERS = ["dopri8","dopri5", "bdf", "rk4", "midpoint", 'adams', 'explicit_adams', 'fixed_adams',"scipy_solver","adaptive_heun"]
@@ -40,11 +40,14 @@ for epoch in range(EPOCHS):
     model.train()
     for idx, batch_data in enumerate(train_loader):
         # batch_data is a pyg.data.DataBatch object
+        batch_data = batch_data.to(device)
         optim.zero_grad()
         t = torch.tensor(t_space).to(device)
 
+        # print (batch_data.edge_index.shape, batch_data.edge_index.max(), batch_data.edge_index.min())
         params_list = [batch_data.edge_index, batch_data.a_index]
         model.update_param(params_list)
+        # print (model.edge_index.shape, model.edge_index.max(), model.edge_index.min())
 
         options = {
             'dtype': torch.float64,
@@ -53,7 +56,7 @@ for epoch in range(EPOCHS):
         }
 
         # The ODE-function to solve the ODE-system
-        print ("ODE")
+        # print ("ODE")
         y_pd = odeint(
             model, batch_data.x, t, 
             method="adaptive_heun", 
@@ -61,20 +64,13 @@ for epoch in range(EPOCHS):
             options=options
         )
 
-        break
-    break
-    #     # pred = model(batch_data)
-    #     # loss = utils.loss_function_vm_with_side_chains_v2(y_pd, batch_data.y)
-    #     loss = peptide_utils.my_custom_peptide_loss(y_pd, batch.y)
-    #     loss.backward()
-    #     optim.step()
+        y_pd = y_pd[-1, :, :].reshape(-1, y_pd.size(-1)) # get last timestep z(T)
+        loss = peptide_utils.loss_function_polar(y_pd, batch_data.y)
+        loss.backward()
+        optim.step()
 
-    #     epoch_loss += loss.cpu().detach.item()
+        epoch_loss += loss.cpu().detach().item()
 
-    # # with torch.no_grad():
-    #     # model.eval()
-    #     # get metrics
-
-    # print (f"epoch: {epoch} | train loss: {epoch_loss:.5f}")
+    print (f"epoch: {epoch} | train loss: {epoch_loss:.5f}")
 
 
