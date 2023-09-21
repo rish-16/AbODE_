@@ -336,7 +336,7 @@ def get_seq_and_coord_uncond(cdr_type,file_path):
             first_location = first_location -1
             last_location  = last_location +1
             total_length_cdr = len(entry['seq'][first_location:last_location])
-            ab_seq = entry['seq'][first_location:last_location]
+            ab_seq = entry['seq'][first_location:last_location] # extract CDR residues
             if len(ab_seq) ==0: continue
             N_coords = np.array(entry['coords']['N'],dtype=float).reshape(-1,1,3)
             C_coords = np.array(entry['coords']['C'],dtype=float).reshape(-1,1,3)
@@ -344,8 +344,8 @@ def get_seq_and_coord_uncond(cdr_type,file_path):
             
             antibody_coords_total = np.concatenate([N_coords,Ca_coords,C_coords],axis=1)
             
-            euclid_coords_ab = antibody_coords_total[first_location:last_location]
-            angle_coords_ab = _get_dihedrals_uncond(euclid_coords_ab)
+            euclid_coords_ab = antibody_coords_total[first_location:last_location] # extract CDR backbone coordinates (N, Ca, C)
+            angle_coords_ab = _get_dihedrals_uncond(euclid_coords_ab) # extract angles from this CDR backbone
 
             final_ab_seq.append(ab_seq)
             final_ab_ang_coord.append(angle_coords_ab)
@@ -1335,7 +1335,7 @@ def get_graph_data_polar_uncond_with_side_chains_rolled(cdr_type,file_path):
 def get_graph_data_polar_uncond_with_side_chains_angle(cdr_type,file_path):
     
     Ab_seq,Ab_ang_coord,Ab_euc_coord,Pdb = get_seq_and_coord_uncond(cdr_type,file_path) # read the file and give seq and coordinates
-    #print(Ab_seq)
+
     final_data = []
     for entry_number in range(len(Ab_seq)):
         
@@ -1409,7 +1409,7 @@ def get_graph_data_polar_uncond_with_side_chains_angle(cdr_type,file_path):
         Input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(),temp_coords[-1].numpy(),antibody_cdr_len)).view(-1,9)
         Final_input_anitbody_features = torch.cat([Input_ab_labels,Input_ab_coords],dim=1)
 
-        data = Data(x=Final_input_anitbody_features, edge_index=edges_ab,y=Final_target_antibody_features,a_index = amino_index.view(1,-1),first_res=first_coord)
+        data = Data(x=Final_input_anitbody_features, edge_index=edges_ab,y=Final_target_antibody_features,a_index = amino_index.view(1,-1), first_res=first_coord)
         #print(data)
         final_data.append(data)
         
@@ -1737,23 +1737,35 @@ if __name__ == "__main__":
     io = PDBIO()
     p = PDBParser()
     cdr_type = 1
-    file_path = "/scratch/work/vermay1/Antibody/data/sabdab/hcdr1_cluster/train_data.jsonl"
+    file_path = "./data/sabdab/hcdr1_cluster/test_data.jsonl"
     Ab_seq,Ab_ang_coord,Ab_euc_coord,Pdb = get_seq_and_coord_uncond(cdr_type,file_path)
     print(Pdb)
-            
-            
     
-    #X = get_graph_data_polar_uncond_with_side_chains(cdr_type,file_path)
-    #Ab_seq,Ab_ang_coord,Ab_euc_coord = get_seq_and_coord_uncond(cdr_type,file_path)
-    #antibody_euc_coord = Ab_euc_coord[1]
-    #C_alpha_ab = antibody_euc_coord[:,1,:].reshape(-1,3)
-    #A = torch.tensor(C_alpha_ab)
-    #B = torch.tensor(C_alpha_ab)
-    #print(kabsch_rmsd(A.numpy(),B.numpy()))
-    #print(pdb)
+    # X = get_graph_data_polar_uncond_with_side_chains(cdr_type,file_path)
+    # Ab_seq,Ab_ang_coord,Ab_euc_coord = get_seq_and_coord_uncond(cdr_type,file_path)
+    # antibody_euc_coord = Ab_euc_coord[1]
+    # C_alpha_ab = antibody_euc_coord[:,1,:].reshape(-1,3)
+    # A = torch.tensor(C_alpha_ab)
+    # B = torch.tensor(C_alpha_ab)
+    # print(kabsch_rmsd(A.numpy(),B.numpy()))
+    # print(pdb)
     #        pdbl = PDBList()
     #        pdbl.retrieve_pdb_file(str(pdb),pdir='PDB',file_format ='pdb')
     #        structure = p.get_structure(str(pdb), str(pdb) + ".pdb")
     #        for model in structure:
     #            for chain in model:
     #                print("Chains present",chain)import torch
+
+# def my_custom_peptide_loss(y_pred, y_gt):
+#     pred_aa_ids = y_pred[:, :20].view(-1, 20) # amino acid identities
+#     gt_aa_ids = y_gt[:, :20].view(-1, 20) # amino acid identities
+
+#     pred_coords = y_pred[:, 20:23] # xyz coordinates
+#     gt_coords = y_gt[:, 20:23] # xyz coordinates
+
+
+
+
+    # total_loss = 
+
+    # return total_loss

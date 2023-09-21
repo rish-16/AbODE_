@@ -68,30 +68,30 @@ with torch.no_grad():
     model.eval()
     for idx,batch in enumerate(Test_data):
         #if idx in ent:
-                data = batch.x.to(device)
-                params_list = [batch.edge_index.to(device),batch.a_index.to(device)]
-                model.update_param(params_list)
-                options = {
-                    'dtype': torch.float64,
-                    # 'first_step': 1.0e-9,
-                    # 'grid_points': t,
-                }
+        data = batch.x.to(device)
+        params_list = [batch.edge_index.to(device),batch.a_index.to(device)]
+        model.update_param(params_list)
+        options = {
+            'dtype': torch.float64,
+            # 'first_step': 1.0e-9,
+            # 'grid_points': t,
+        }
 
-                y_pd = odeint(
-                   model, data, t, method=args.solver, 
-                    rtol=args.rtol, atol=args.atol,
-                    options=options
-                ) # The ODE-function to solve the ODE-system
+        y_pd = odeint(
+            model, data, t, method=args.solver, 
+            rtol=args.rtol, atol=args.atol,
+            options=options
+        ) # The ODE-function to solve the ODE-system
 
-                y_gt = batch.y.to(device)
-                rmsd_n,rmsd_ca,rmsd_c,ppl,rmsd_cart_ca = evaluate_rmsd_with_sidechains_angle(data,y_pd[-1],y_gt,batch.first_res) # function to calculate the metrics
-                ppl_pred.append(ppl)
-                rmsd_pred.append(rmsd_ca)
-                RMSD_test_n.append(rmsd_n)
-                RMSD_test_ca.append(rmsd_ca)
-                RMSD_test_ca_cart.append(rmsd_cart_ca)
-                RMSD_test_c.append(rmsd_c)
-                Perplexity.append(ppl)
+        y_gt = batch.y.to(device)
+        rmsd_n,rmsd_ca,rmsd_c,ppl,rmsd_cart_ca = evaluate_rmsd_with_sidechains_angle(data,y_pd[-1],y_gt,batch.first_res) # function to calculate the metrics
+        ppl_pred.append(ppl)
+        rmsd_pred.append(rmsd_ca)
+        RMSD_test_n.append(rmsd_n)
+        RMSD_test_ca.append(rmsd_ca)
+        RMSD_test_ca_cart.append(rmsd_cart_ca)
+        RMSD_test_c.append(rmsd_c)
+        Perplexity.append(ppl)
 
     RMSD_test_arr_n = np.array(RMSD_test_n).reshape(-1,1) 
     RMSD_test_arr_ca = np.array(RMSD_test_ca).reshape(-1,1)
