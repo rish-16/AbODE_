@@ -301,12 +301,14 @@ def evaluate_model(model, loader, device, odeint, time):
         RMSD_test_c.append(rmsd_C)
 
     metrics = {
-        'perp': np.array(perplexity).reshape(-1, 1),
-        'rmsd': np.array(RMSD_test_ca).reshape(-1, 1),
-        'rmsd_n': np.array(RMSD_test_n).reshape(-1, 1),
-        'rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1),
-        'rmsd_ca_cart': np.array(RMSD_test_ca_cart).reshape(-1, 1),
-        'rmsd_c': np.array(RMSD_test_c).reshape(-1, 1)
+        'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
+        'std_perplexity': np.array(perplexity).reshape(-1, 1).std(axis=0)[0],
+        'mean_rmsd': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0],
+        'std_rmsd': np.array(RMSD_test_ca).reshape(-1, 1).std(axis=0)[0],
+        'mean_rmsd_n': np.array(RMSD_test_n).reshape(-1, 1).mean(axis=0)[0],
+        'mean_rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0],
+        'mean_rmsd_ca_cart': np.array(RMSD_test_ca_cart).reshape(-1, 1).mean(axis=0)[0],
+        'mean_rmsd_c': np.array(RMSD_test_c).reshape(-1, 1).mean(axis=0)[0]
     }
 
     return metrics
