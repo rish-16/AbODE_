@@ -85,6 +85,7 @@ with torch.no_grad():
 
         y_gt = batch.y.to(device)
         rmsd_n,rmsd_ca,rmsd_c,ppl,rmsd_cart_ca = evaluate_rmsd_with_sidechains_angle(data,y_pd[-1],y_gt,batch.first_res) # function to calculate the metrics
+        
         ppl_pred.append(ppl)
         rmsd_pred.append(rmsd_ca)
         RMSD_test_n.append(rmsd_n)

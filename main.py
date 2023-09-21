@@ -19,7 +19,7 @@ peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("
 n_instances = len(peptide_data)
 train_size = int(0.8 * n_instances)
 peptide_data_train, peptide_data_test = peptide_data[:train_size], peptide_data[train_size:]
-train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=1)
+train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=128)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -33,6 +33,7 @@ t_begin = 0
 t_end = 1
 t_nsamples = 200
 t_space = np.linspace(t_begin, t_end, t_nsamples)
+t = torch.tensor(t_space).to(device)
 
 EPOCHS = 1000
 for epoch in range(EPOCHS):
@@ -42,7 +43,6 @@ for epoch in range(EPOCHS):
         # batch_data is a pyg.data.DataBatch object
         batch_data = batch_data.to(device)
         optim.zero_grad()
-        t = torch.tensor(t_space).to(device)
 
         # print (batch_data.edge_index.shape, batch_data.edge_index.max(), batch_data.edge_index.min())
         params_list = [batch_data.edge_index, batch_data.a_index]
@@ -72,5 +72,10 @@ for epoch in range(EPOCHS):
         epoch_loss += loss.cpu().detach().item()
 
     print (f"epoch: {epoch} | train loss: {epoch_loss:.5f}")
+    if epoch % 20 == 0:
+        eval_metrics = peptide_utils.evaluate_model(model, test_loader, device, odeint, time=t)
+        pprint (eval_metrics)
+        torch.save(model, f"peptode_ckpt/peptode_model_epoch_{epoch}.pt")
+        torch.save(eval_metrics, f"peptode_ckpt/peptode_metrics_epoch_{epoch}.pt")
 
-
+torch.save(model, f"peptode_ckpt/peptode_model_epoch_final.pt")        

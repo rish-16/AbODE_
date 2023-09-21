@@ -1034,8 +1034,6 @@ def evaluate_rmsd(y_pred,y_truth):
     return kabsch_rmsd(pred_polar_coord,truth_polar_coord)
 
 
-
-
 def evaluate_rmsd_with_sidechains_angle(y_initial,y_pred,y_truth,first_residue):
     
     pred_labels = y_pred[:,:20].view(-1,20)
@@ -1047,7 +1045,7 @@ def evaluate_rmsd_with_sidechains_angle(y_initial,y_pred,y_truth,first_residue):
     loss_ce = celoss(pred_labels,truth_labels)
     ppl = torch.exp(loss_ce)
     
-    initial_polar_coord = y_initial[:,20:29].detach().numpy().reshape(-1,3,3)
+    # initial_polar_coord = y_initial[:,20:29].detach().numpy().reshape(-1,3,3)
     pred_polar_coord = y_pred[:,20:29].detach().numpy().reshape(-1,3,3)
     truth_polar_coord = y_truth[:,20:29].detach().numpy().reshape(-1,3,3)
     first_residue_coord = first_residue[:,1,:].detach().numpy().reshape(-1,3)

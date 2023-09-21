@@ -72,7 +72,7 @@ def process_data_mda(path):
         coords = backbone_atoms.positions
         coords = torch.from_numpy(coords) # (3N, 3)
 
-        shape_converter = lambda x,i : x[i:][::3]
+        shape_converter = lambda x,i : x[i:][::3] # 3 because we only care about grouping N, Ca, C separately
 
         coords_concat_n = shape_converter(coords, 0)
         coords_concat_ca = shape_converter(coords, 1)
@@ -87,7 +87,7 @@ def process_data_mda(path):
 
         node_features = torch.tensor(node_features)
 
-        edge_index = radius_graph(coords_concat_ca, r=5, loop=False)
+        edge_index = radius_graph(coords_concat_ca, r=5, loop=False) # connect residues by C_alpha coordinates
         
         # data = Data(x=coords_final, h=node_features, y=target_features, edge_index=edge_index)
         data = {
@@ -111,6 +111,8 @@ def get_graph_data_pyg(mda_data):
 
         peptide_coords_backward_rolled = torch.roll(all_coords, -1, 0)
         peptide_diff_backward = peptide_coords_backward_rolled - all_coords
+
+        first_coord = all_coords[0].view(-1, 3, 3)
         
         # peptide_diff_forward = peptide_diff_forward[1:-1]
         # peptide_diff_backward = peptide_diff_backward[1:-1]
@@ -122,17 +124,6 @@ def get_graph_data_pyg(mda_data):
 
         # s_i = <r_i, a_i, g_i>
         peptide_pos_features = torch.cat((r_norm, mid_angle, normal_angle), dim=2).view(-1, 9) # s_i
-
-        # edge_s = []
-        # edge_f = []
-        # #edges_ab = radius_graph(torch.tensor(C_alpha_ab),r=10,loop=True)
-        # for idx_start in range(len(peptide_pos_features)):
-        #     for idx_end in range(len(peptide_pos_features)):
-        #         if idx_start != idx_end:
-        #             edge_s.append(idx_start)
-        #             edge_f.append(idx_end)
-        
-        # edges_ab = torch.tensor([edge_s,edge_f])
 
         label_features = record['aa']
         assert label_features.size(0) == peptide_pos_features.size(0), f"size mismatch {label_features.shape} AND {peptide_pos_features.shape}"
@@ -146,7 +137,7 @@ def get_graph_data_pyg(mda_data):
         input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), N_res)).view(-1, 9)
         final_input_features = torch.cat([input_peptide_labels, input_ab_coords], dim=1) # z_i(t) = [a_i(t), s_i(t)]
         
-        d = Data(x=final_input_features, y=final_target_features, edge_index=record['edge_index'], a_index=amino_index.view(1,-1), )
+        d = Data(x=final_input_features, y=final_target_features, edge_index=record['edge_index'], a_index=amino_index.view(1,-1), first_residue=first_coord)
         all_data.append(d)
 
     return all_data
@@ -161,6 +152,164 @@ def process_data_rdk(rdkit_mols):
     """
 
     pass
+
+def _transform_to_cart(coords_r, coords_theta, coords_phi):
+    x_coord_n_true  = coords_r[:,0].view(-1,1)*torch.sin(coords_theta[:,0]).view(-1,1)*torch.cos(coords_phi[:,0]).view(-1,1)
+    y_coord_n_true  = coords_r[:,0].view(-1,1)*torch.sin(coords_theta[:,0]).view(-1,1)*torch.sin(coords_phi[:,0]).view(-1,1)
+    z_coord_n_true  = coords_r[:,0].view(-1,1)*torch.cos(coords_theta[:,0]).view(-1,1)
+        
+    x_coord_ca_true   = coords_r[:,1].view(-1,1)*torch.sin(coords_theta[:,1]).view(-1,1)*torch.cos(coords_phi[:,1]).view(-1,1)
+    y_coord_ca_true   = coords_r[:,1].view(-1,1)*torch.sin(coords_theta[:,1]).view(-1,1)*torch.sin(coords_phi[:,1]).view(-1,1)
+    z_coord_ca_true   = coords_r[:,1].view(-1,1)*torch.cos(coords_theta[:,1]).view(-1,1).view(-1,1)
+        
+    x_coord_c_true   = coords_r[:,2].view(-1,1)*torch.sin(coords_theta[:,2]).view(-1,1)*torch.cos(coords_phi[:,2]).view(-1,1)
+    y_coord_c_true   = coords_r[:,2].view(-1,1)*torch.sin(coords_theta[:,2]).view(-1,1)*torch.sin(coords_phi[:,2]).view(-1,1)
+    z_coord_c_true   = coords_r[:,2].view(-1,1)*torch.cos(coords_theta[:,2]).view(-1,1)
+    
+    Cart = torch.cat([x_coord_n_true, y_coord_n_true, z_coord_n_true, x_coord_ca_true, y_coord_ca_true, z_coord_ca_true, x_coord_c_true, y_coord_c_true, z_coord_c_true], dim=1).view(-1, 9)
+    
+    return Cart
+
+def _get_cartesian(pred_polar_coord, truth_polar_coord):
+    pred_r = pred_polar_coord[:, [0,3,6]]
+    pred_theta = pred_polar_coord[:, [1,4,7]]
+    pred_phi = 3.14/2 - pred_polar_coord[:, [2,5,8]]
+        
+    coords_r =  truth_polar_coord[:, [0,3,6]]
+    coords_theta = truth_polar_coord[:, [1,4,7]]
+    coords_phi = 3.14/2 -truth_polar_coord[:, [2,5,8]]
+    
+    Cart_true = _transform_to_cart(coords_r,coords_theta,coords_phi)
+    Cart_pred = _transform_to_cart(pred_r,pred_theta,pred_phi)
+    
+    return Cart_true, Cart_pred
+
+def evaluate_rmsd_with_sidechains_angle(y_initial,y_pred,y_truth,first_residue):
+    
+    pred_labels = y_pred[:,:20].view(-1,20)
+    truth_labels = y_truth[:,:20].view(-1,20)
+
+    # Calculating the PPL
+    
+    celoss = nn.CrossEntropyLoss()
+    loss_ce = celoss(pred_labels,truth_labels)
+    ppl = torch.exp(loss_ce)
+    
+    # initial_polar_coord = y_initial[:,20:29].detach().numpy().reshape(-1,3,3)
+    pred_polar_coord = y_pred[:,20:29].detach().numpy().reshape(-1,3,3)
+    truth_polar_coord = y_truth[:,20:29].detach().numpy().reshape(-1,3,3)
+    first_residue_coord = first_residue[:,1,:].detach().numpy().reshape(-1,3)
+    
+    rmsd_N = kabsch_rmsd(pred_polar_coord[:][:,0][:],truth_polar_coord[:][:,0][:])
+    rmsd_Ca = kabsch_rmsd(pred_polar_coord[:][:,1][:],truth_polar_coord[:][:,1][:])
+    rmsd_C = kabsch_rmsd(pred_polar_coord[:][:,2][:],truth_polar_coord[:][:,2][:])
+    
+    
+    Cart_pred,Cart_truth = _get_cartesian(torch.tensor(pred_polar_coord).view(-1,9),torch.tensor(truth_polar_coord).view(-1,9))
+    Cart_pred[0] = Cart_truth[0]
+    Cart_pred[-1] = Cart_truth[-1]
+    
+    C_alpha_pred = Cart_pred[:,3:6].numpy()
+    C_alpha_truth = Cart_truth[:,3:6].numpy()
+    
+    for entry in range(len(C_alpha_pred)):
+        if entry == 0: 
+            C_alpha_pred[entry] = C_alpha_pred[entry] + first_residue_coord
+            C_alpha_truth[entry] = C_alpha_truth[entry] + first_residue_coord
+        else:
+            C_alpha_pred[entry] =C_alpha_pred[entry] + C_alpha_pred[entry-1]
+            C_alpha_truth[entry] = C_alpha_truth[entry] + C_alpha_truth[entry-1]
+
+    # Calculating the Kabsch RMSD with reconstructed features
+    rmsd_cart_Ca = kabsch_rmsd(C_alpha_pred,C_alpha_truth)
+    
+    return rmsd_N,rmsd_Ca,rmsd_C,ppl.item(),rmsd_cart_Ca
+
+def evaluate_model(model, loader, device, odeint, time):
+    model.eval()
+    
+    perplexity = []
+    calpha_rmsd = []
+    rmsd_pred = []
+    RMSD_test_n = []
+    RMSD_test_ca = []
+    RMSD_test_ca_cart = []
+    RMSD_test_c = []    
+
+    for i, batch in enumerate(loader):
+        batch = batch.to(device)
+        params = [batch.edge_index, batch.a_index]
+        model.update_param(params)
+        x = batch.x
+
+        options = {
+            'dtype': torch.float64,
+            # 'first_step': 1.0e-9,
+            # 'grid_points': t,
+        }
+        
+        y_pd = odeint(
+            model, x, time, 
+            method="adaptive_heun", 
+            rtol=5e-1, atol=5e-1,
+            options=options
+        )
+
+        y_pd = y_pd[-1] # get final timestep z(T)
+        y_truth = batch.y
+        
+        pred_labels = y_pd[:, :28].view(-1, 28)
+        truth_labels = y_truth[:, :28].view(-1, 28)
+
+        celoss = nn.CrossEntropyLoss()
+        loss_ce = celoss(pred_labels, truth_labels)
+        ppl = torch.exp(loss_ce)
+
+        first_residue = batch.first_residue
+
+        pred_polar_coord = y_pd[:,28:37].detach().numpy().reshape(-1, 3, 3)
+        truth_polar_coord = y_truth[:,28:37].detach().numpy().reshape(-1, 3, 3)
+        first_residue_coord = first_residue[:, 1, :].detach().numpy().reshape(-1, 3)
+
+        rmsd_N = kabsch_rmsd(pred_polar_coord[:][:,0][:], truth_polar_coord[:][:,0][:])
+        rmsd_Ca = kabsch_rmsd(pred_polar_coord[:][:,1][:], truth_polar_coord[:][:,1][:])
+        rmsd_C = kabsch_rmsd(pred_polar_coord[:][:,2][:], truth_polar_coord[:][:,2][:])
+
+        Cart_pred,Cart_truth = _get_cartesian(torch.tensor(pred_polar_coord).view(-1,9),torch.tensor(truth_polar_coord).view(-1,9))
+        Cart_pred[0] = Cart_truth[0]
+        Cart_pred[-1] = Cart_truth[-1]
+        
+        C_alpha_pred = Cart_pred[:,3:6].numpy()
+        C_alpha_truth = Cart_truth[:,3:6].numpy()
+        
+        for entry in range(len(C_alpha_pred)):
+            if entry == 0: 
+                C_alpha_pred[entry] = C_alpha_pred[entry] + first_residue_coord
+                C_alpha_truth[entry] = C_alpha_truth[entry] + first_residue_coord
+            else:
+                C_alpha_pred[entry] = C_alpha_pred[entry] + C_alpha_pred[entry-1]
+                C_alpha_truth[entry] = C_alpha_truth[entry] + C_alpha_truth[entry-1]
+
+        # Calculating the Kabsch RMSD with reconstructed features
+        rmsd_cart_Ca = kabsch_rmsd(C_alpha_pred,C_alpha_truth)
+
+        perplexity.append(ppl.item())
+        rmsd_pred.append(rmsd_Ca)
+        RMSD_test_n.append(rmsd_N)
+        RMSD_test_ca.append(rmsd_Ca)
+        RMSD_test_ca_cart.append(rmsd_cart_Ca)
+        RMSD_test_c.append(rmsd_C)
+
+    metrics = {
+        'perp': np.array(perplexity).reshape(-1, 1),
+        'rmsd': np.array(RMSD_test_ca).reshape(-1, 1),
+        'rmsd_n': np.array(RMSD_test_n).reshape(-1, 1),
+        'rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1),
+        'rmsd_ca_cart': np.array(RMSD_test_ca_cart).reshape(-1, 1),
+        'rmsd_c': np.array(RMSD_test_c).reshape(-1, 1)
+    }
+
+    return metrics
 
 if __name__ == "__main__":
     peptide_data = get_graph_data_pyg(process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
