@@ -267,9 +267,9 @@ def evaluate_model(model, loader, device, odeint, time):
 
         first_residue = batch.first_residue
 
-        pred_polar_coord = y_pd[:,28:37].detach().numpy().reshape(-1, 3, 3)
-        truth_polar_coord = y_truth[:,28:37].detach().numpy().reshape(-1, 3, 3)
-        first_residue_coord = first_residue[:, 1, :].detach().numpy().reshape(-1, 3)
+        pred_polar_coord = y_pd[:,28:37].cpu().detach().numpy().reshape(-1, 3, 3)
+        truth_polar_coord = y_truth[:,28:37].cpu().detach().numpy().reshape(-1, 3, 3)
+        first_residue_coord = first_residue[:, 1, :].cpu().detach().numpy().reshape(-1, 3)
 
         rmsd_N = kabsch_rmsd(pred_polar_coord[:][:,0][:], truth_polar_coord[:][:,0][:])
         rmsd_Ca = kabsch_rmsd(pred_polar_coord[:][:,1][:], truth_polar_coord[:][:,1][:])
