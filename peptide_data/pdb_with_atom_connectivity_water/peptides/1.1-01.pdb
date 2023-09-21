@@ -1,0 +1,197 @@
+TITLE     v2d_amber99sb in water
+REMARK    THIS IS A SIMULATION BOX
+CRYST1   45.000   45.000   45.000  90.00  90.00  90.00 P 1           1
+MODEL        1
+ATOM      1  N   ALA     1      22.100  19.970  20.380  1.00  0.00           N
+ATOM      2  H   ALA     1      22.630  20.810  20.560  1.00  0.00           H
+ATOM      3  CA  ALA     1      21.780  19.290  21.640  1.00  0.00           C
+ATOM      4  HA  ALA     1      20.770  18.910  21.540  1.00  0.00           H
+ATOM      5  CB  ALA     1      22.660  18.000  21.840  1.00  0.00           C
+ATOM      6  HB1 ALA     1      22.390  17.480  22.760  1.00  0.00           H
+ATOM      7  HB2 ALA     1      22.700  17.410  20.920  1.00  0.00           H
+ATOM      8  HB3 ALA     1      23.680  18.360  22.010  1.00  0.00           H
+ATOM      9  C   ALA     1      21.910  20.260  22.860  1.00  0.00           C
+ATOM     10  O   ALA     1      22.960  20.810  23.080  1.00  0.00           O
+ATOM     11  N   A11     2      20.860  20.490  23.670  1.00  0.00           N
+ATOM     12  CB  A11     2      19.450  20.070  23.440  1.00  0.00           C
+ATOM     13  CG  A11     2      19.230  18.670  24.160  1.00  0.00           C
+ATOM     14  O2  A11     2      18.830  17.690  23.200  1.00  0.00           O
+ATOM     15  CD  A11     2      18.710  16.370  23.720  1.00  0.00           C
+ATOM     16  HD1 A11     2      19.680  15.900  23.880  1.00  0.00           H
+ATOM     17  HD2 A11     2      18.170  15.810  22.960  1.00  0.00           H
+ATOM     18  HD3 A11     2      18.090  16.480  24.620  1.00  0.00           H
+ATOM     19  HG1 A11     2      18.530  18.930  24.950  1.00  0.00           H
+ATOM     20  HG2 A11     2      20.160  18.300  24.600  1.00  0.00           H
+ATOM     21  HB1 A11     2      19.040  19.940  22.440  1.00  0.00           H
+ATOM     22  HB2 A11     2      18.740  20.760  23.910  1.00  0.00           H
+ATOM     23  CA  A11     2      21.080  21.240  24.980  1.00  0.00           C
+ATOM     24  HA1 A11     2      20.270  21.020  25.670  1.00  0.00           H
+ATOM     25  HA2 A11     2      22.010  20.850  25.400  1.00  0.00           H
+ATOM     26  C   A11     2      21.110  22.840  24.900  1.00  0.00           C
+ATOM     27  O   A11     2      20.160  23.470  24.430  1.00  0.00           O
+ATOM     28  N   MLE     3      22.100  23.500  25.510  1.00  0.00           N
+ATOM     29  CM  MLE     3      23.190  22.830  26.340  1.00  0.00           C
+ATOM     30  HM1 MLE     3      23.750  23.580  26.900  1.00  0.00           H
+ATOM     31  HM2 MLE     3      23.790  22.360  25.570  1.00  0.00           H
+ATOM     32  HM3 MLE     3      22.850  22.170  27.140  1.00  0.00           H
+ATOM     33  CA  MLE     3      22.210  24.990  25.330  1.00  0.00           C
+ATOM     34  CB  MLE     3      22.120  25.810  26.680  1.00  0.00           C
+ATOM     35  CG  MLE     3      20.790  25.720  27.430  1.00  0.00           C
+ATOM     36  CD  MLE     3      19.730  26.540  26.600  1.00  0.00           C
+ATOM     37  HD1 MLE     3      19.540  26.020  25.660  1.00  0.00           H
+ATOM     38  HD2 MLE     3      20.070  27.560  26.420  1.00  0.00           H
+ATOM     39  HD3 MLE     3      18.760  26.530  27.110  1.00  0.00           H
+ATOM     40  CE  MLE     3      20.370  24.300  27.920  1.00  0.00           C
+ATOM     41  HE1 MLE     3      19.850  23.850  27.070  1.00  0.00           H
+ATOM     42  HE2 MLE     3      19.690  24.500  28.760  1.00  0.00           H
+ATOM     43  HE3 MLE     3      21.170  23.660  28.290  1.00  0.00           H
+ATOM     44  HG  MLE     3      20.950  26.330  28.320  1.00  0.00           H
+ATOM     45  HB1 MLE     3      22.910  25.470  27.350  1.00  0.00           H
+ATOM     46  HB2 MLE     3      22.390  26.850  26.480  1.00  0.00           H
+ATOM     47  HA  MLE     3      21.340  25.410  24.820  1.00  0.00           H
+ATOM     48  C   MLE     3      23.420  25.440  24.440  1.00  0.00           C
+ATOM     49  O   MLE     3      24.010  26.500  24.450  1.00  0.00           O
+ATOM     50  N   NLE     4      23.790  24.490  23.630  1.00  0.00           N
+ATOM     51  HN  NLE     4      23.360  23.570  23.700  1.00  0.00           H
+ATOM     52  CA  NLE     4      24.510  24.630  22.310  1.00  0.00           C
+ATOM     53  CB  NLE     4      25.940  24.100  22.460  1.00  0.00           C
+ATOM     54  CG  NLE     4      26.110  22.610  22.860  1.00  0.00           C
+ATOM     55  CD  NLE     4      27.510  22.070  23.210  1.00  0.00           C
+ATOM     56  CF  NLE     4      28.320  22.820  24.390  1.00  0.00           C
+ATOM     57  HF1 NLE     4      28.650  23.780  23.990  1.00  0.00           H
+ATOM     58  HF2 NLE     4      29.210  22.200  24.500  1.00  0.00           H
+ATOM     59  HF3 NLE     4      27.750  22.910  25.310  1.00  0.00           H
+ATOM     60  HD1 NLE     4      28.140  22.110  22.330  1.00  0.00           H
+ATOM     61  HD2 NLE     4      27.210  21.060  23.520  1.00  0.00           H
+ATOM     62  HG1 NLE     4      25.810  22.000  22.010  1.00  0.00           H
+ATOM     63  HG2 NLE     4      25.470  22.370  23.710  1.00  0.00           H
+ATOM     64  HB1 NLE     4      26.460  24.200  21.510  1.00  0.00           H
+ATOM     65  HB2 NLE     4      26.480  24.690  23.210  1.00  0.00           H
+ATOM     66  HA  NLE     4      24.440  25.680  22.050  1.00  0.00           H
+ATOM     67  C   NLE     4      23.700  23.970  21.190  1.00  0.00           C
+ATOM     68  O   NLE     4      22.850  23.120  21.510  1.00  0.00           O
+ATOM     69  N   PRO     5      23.830  24.440  19.940  1.00  0.00           N
+ATOM     70  CD  PRO     5      24.980  25.130  19.450  1.00  0.00           C
+ATOM     71  HD2 PRO     5      25.910  24.560  19.510  1.00  0.00           H
+ATOM     72  HD3 PRO     5      25.060  26.040  20.040  1.00  0.00           H
+ATOM     73  CG  PRO     5      24.660  25.440  17.950  1.00  0.00           C
+ATOM     74  HG2 PRO     5      25.320  24.810  17.350  1.00  0.00           H
+ATOM     75  HG3 PRO     5      24.680  26.500  17.720  1.00  0.00           H
+ATOM     76  CB  PRO     5      23.210  24.990  17.660  1.00  0.00           C
+ATOM     77  HB2 PRO     5      23.060  24.520  16.690  1.00  0.00           H
+ATOM     78  HB3 PRO     5      22.540  25.840  17.700  1.00  0.00           H
+ATOM     79  CA  PRO     5      22.880  24.110  18.910  1.00  0.00           C
+ATOM     80  HA  PRO     5      21.820  24.190  19.160  1.00  0.00           H
+ATOM     81  C   PRO     5      23.020  22.640  18.500  1.00  0.00           C
+ATOM     82  O   PRO     5      24.150  22.130  18.600  1.00  0.00           O
+ATOM     83  N   A01     6      22.000  21.870  18.020  1.00  0.00           N
+ATOM     84  CB  A01     6      20.620  22.330  17.830  1.00  0.00           C
+ATOM     85  CG  A01     6      20.470  22.920  16.380  1.00  0.00           C
+ATOM     86  HG1 A01     6      21.180  23.730  16.210  1.00  0.00           H
+ATOM     87  HG2 A01     6      19.450  23.300  16.290  1.00  0.00           H
+ATOM     88  HG3 A01     6      20.490  22.110  15.650  1.00  0.00           H
+ATOM     89  HB1 A01     6      20.320  23.080  18.560  1.00  0.00           H
+ATOM     90  HB2 A01     6      19.910  21.500  17.840  1.00  0.00           H
+ATOM     91  CA  A01     6      22.150  20.390  17.970  1.00  0.00           C
+ATOM     92  HA1 A01     6      21.540  20.230  17.090  1.00  0.00           H
+ATOM     93  HA2 A01     6      23.180  20.070  17.800  1.00  0.00           H
+ATOM     94  C   A01     6      21.650  19.600  19.170  1.00  0.00           C
+ATOM     95  O   A01     6      20.960  18.600  18.970  1.00  0.00           O
+TER
+ENDMDL
+CONECT    1    2
+CONECT    1    3
+CONECT    1   94
+CONECT    3    4
+CONECT    3    5
+CONECT    3    9
+CONECT    5    6
+CONECT    5    7
+CONECT    5    8
+CONECT    9   10
+CONECT    9   11
+CONECT   11   12
+CONECT   11   23
+CONECT   12   13
+CONECT   12   21
+CONECT   12   22
+CONECT   13   14
+CONECT   13   19
+CONECT   13   20
+CONECT   14   15
+CONECT   15   16
+CONECT   15   17
+CONECT   15   18
+CONECT   23   24
+CONECT   23   25
+CONECT   23   26
+CONECT   26   27
+CONECT   26   28
+CONECT   28   29
+CONECT   28   33
+CONECT   29   30
+CONECT   29   31
+CONECT   29   32
+CONECT   33   34
+CONECT   33   47
+CONECT   33   48
+CONECT   34   35
+CONECT   34   45
+CONECT   34   46
+CONECT   35   36
+CONECT   35   40
+CONECT   35   44
+CONECT   36   37
+CONECT   36   38
+CONECT   36   39
+CONECT   40   41
+CONECT   40   42
+CONECT   40   43
+CONECT   48   49
+CONECT   48   50
+CONECT   50   51
+CONECT   50   52
+CONECT   52   53
+CONECT   52   66
+CONECT   52   67
+CONECT   53   54
+CONECT   53   64
+CONECT   53   65
+CONECT   54   55
+CONECT   54   62
+CONECT   54   63
+CONECT   55   56
+CONECT   55   60
+CONECT   55   61
+CONECT   56   57
+CONECT   56   58
+CONECT   56   59
+CONECT   67   68
+CONECT   67   69
+CONECT   69   70
+CONECT   69   79
+CONECT   70   71
+CONECT   70   72
+CONECT   70   73
+CONECT   73   74
+CONECT   73   75
+CONECT   73   76
+CONECT   76   77
+CONECT   76   78
+CONECT   76   79
+CONECT   79   80
+CONECT   79   81
+CONECT   81   82
+CONECT   81   83
+CONECT   83   84
+CONECT   83   91
+CONECT   84   85
+CONECT   84   89
+CONECT   84   90
+CONECT   85   86
+CONECT   85   87
+CONECT   85   88
+CONECT   91   92
+CONECT   91   93
+CONECT   91   94
+CONECT   94   95
