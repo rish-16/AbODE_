@@ -77,10 +77,6 @@ for epoch in range(EPOCHS):
         eval_metrics = peptide_utils.evaluate_model(model, test_loader, device, odeint, time=t)
         pprint (eval_metrics, indent=2)
 
-        
-        print("Min Perplexity", min(Perplexity), " | Mean Perplexity ", np.mean(Perplexity_arr,axis=0)[0], " | Std Perplexity", np.std(Perplexity_arr,axis=0)[0])
-        print("Min RMSD ",min(RMSD_test_ca_cart), "| Mean RMSD ", np.mean(RMSD_test_arr_ca_cart,axis=0)[0], "| Std RMSD ", np.std(RMSD_test_arr_ca_cart,axis=0)[0])
-
         torch.save(model, f"peptode_ckpt/peptode_model_epoch_{epoch}.pt")
         torch.save(eval_metrics, f"peptode_ckpt/peptode_metrics_epoch_{epoch}.pt")
 
