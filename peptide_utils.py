@@ -281,7 +281,7 @@ def decode_polar_coords(bb_combined):
     cart_true = _transform_to_cart(coords_r, coords_theta, coords_phi)
     return cart_true
 
-def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/"):
+def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/", pep_idx=0):
     """
     res_ids are (N, 1)
     bb_coords are (N, 9) for {N, Ca, C}, each with xyz coordinates
@@ -329,7 +329,7 @@ def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/"):
 
     uni.atoms.positions = decoded_coords.numpy()
 
-    with mda.Writer(f"{save_dir}/generated_peptide_{int(time.time())}.pdb", len(uni.atoms)) as w:
+    with mda.Writer(f"{save_dir}/generated_peptide_{pep_idx}.pdb", len(uni.atoms)) as w:
         w.write(uni)
 
     print (f"Saved molecule")

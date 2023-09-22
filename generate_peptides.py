@@ -70,7 +70,7 @@ def generate(model, N_peptides, N_residues):
         data = Data(x=final_input_features, edge_index=edges, a_index=aa_idx.view(1,-1))
         batch.append(data)
 
-    for data in batch: # generate 1 molecule at a time (TODO: batching is buggy)
+    for ii, data in enumerate(batch): # generate 1 molecule at a time (TODO: batching is buggy)
         batch_data = Batch.from_data_list([data])
         batch_data = batch_data.to(device)
         params = [batch_data.edge_index, batch_data.a_index]
@@ -95,6 +95,6 @@ def generate(model, N_peptides, N_residues):
         amino_acids_ids = amino_acids_ids.argmax(dim=1)
         polar_coords = y_pd[:, 28:37]
 
-        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords)
+        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii)
 
 generate(model, 3, [6,6,6])
