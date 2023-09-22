@@ -142,9 +142,6 @@ def get_graph_data_pyg(mda_data):
 
     return all_data
 
-def get_angles(coordinates, atom_ids):
-    pass
-
 def process_data_rdk(rdkit_mols):
     """
     - extract N, Ca, C backbone coordinates
@@ -183,47 +180,6 @@ def _get_cartesian(pred_polar_coord, truth_polar_coord):
     Cart_pred = _transform_to_cart(pred_r,pred_theta,pred_phi)
     
     return Cart_true, Cart_pred
-
-def evaluate_rmsd_with_sidechains_angle(y_initial,y_pred,y_truth,first_residue):
-    
-    pred_labels = y_pred[:,:20].view(-1,20)
-    truth_labels = y_truth[:,:20].view(-1,20)
-
-    # Calculating the PPL
-    
-    celoss = nn.CrossEntropyLoss()
-    loss_ce = celoss(pred_labels,truth_labels)
-    ppl = torch.exp(loss_ce)
-    
-    # initial_polar_coord = y_initial[:,20:29].detach().numpy().reshape(-1,3,3)
-    pred_polar_coord = y_pred[:,20:29].detach().numpy().reshape(-1,3,3)
-    truth_polar_coord = y_truth[:,20:29].detach().numpy().reshape(-1,3,3)
-    first_residue_coord = first_residue[:,1,:].detach().numpy().reshape(-1,3)
-    
-    rmsd_N = kabsch_rmsd(pred_polar_coord[:][:,0][:],truth_polar_coord[:][:,0][:])
-    rmsd_Ca = kabsch_rmsd(pred_polar_coord[:][:,1][:],truth_polar_coord[:][:,1][:])
-    rmsd_C = kabsch_rmsd(pred_polar_coord[:][:,2][:],truth_polar_coord[:][:,2][:])
-    
-    
-    Cart_pred,Cart_truth = _get_cartesian(torch.tensor(pred_polar_coord).view(-1,9),torch.tensor(truth_polar_coord).view(-1,9))
-    Cart_pred[0] = Cart_truth[0]
-    Cart_pred[-1] = Cart_truth[-1]
-    
-    C_alpha_pred = Cart_pred[:,3:6].numpy()
-    C_alpha_truth = Cart_truth[:,3:6].numpy()
-    
-    for entry in range(len(C_alpha_pred)):
-        if entry == 0: 
-            C_alpha_pred[entry] = C_alpha_pred[entry] + first_residue_coord
-            C_alpha_truth[entry] = C_alpha_truth[entry] + first_residue_coord
-        else:
-            C_alpha_pred[entry] =C_alpha_pred[entry] + C_alpha_pred[entry-1]
-            C_alpha_truth[entry] = C_alpha_truth[entry] + C_alpha_truth[entry-1]
-
-    # Calculating the Kabsch RMSD with reconstructed features
-    rmsd_cart_Ca = kabsch_rmsd(C_alpha_pred,C_alpha_truth)
-    
-    return rmsd_N,rmsd_Ca,rmsd_C,ppl.item(),rmsd_cart_Ca
 
 def evaluate_model(model, loader, device, odeint, time):
     model.eval()
@@ -275,7 +231,7 @@ def evaluate_model(model, loader, device, odeint, time):
         rmsd_Ca = kabsch_rmsd(pred_polar_coord[:][:,1][:], truth_polar_coord[:][:,1][:])
         rmsd_C = kabsch_rmsd(pred_polar_coord[:][:,2][:], truth_polar_coord[:][:,2][:])
 
-        Cart_pred,Cart_truth = _get_cartesian(torch.tensor(pred_polar_coord).view(-1,9),torch.tensor(truth_polar_coord).view(-1,9))
+        Cart_pred,Cart_truth = _get_cartesian(torch.tensor(pred_polar_coord).view(-1, 9), torch.tensor(truth_polar_coord).view(-1, 9))
         Cart_pred[0] = Cart_truth[0]
         Cart_pred[-1] = Cart_truth[-1]
         
