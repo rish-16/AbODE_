@@ -50,7 +50,8 @@ def generate(model, N_peptides, N_residues):
         
         n_res = N_residues[n]
         peptide_pos_features = torch.randn(n_res, 9)
-        input_peptide_labels = float(1 / 28) * torch.ones(size=(n_res, 28))
+        # input_peptide_labels = float(1 / 28) * torch.ones(size=(n_res, 28))
+        input_peptide_labels = torch.rand(size=(n_res, 28))
         input_peptide_labels = input_peptide_labels.view(-1, 28)
         amino_index = torch.tensor([i for i in range(n_res)]).view(-1, 1).float()
         
