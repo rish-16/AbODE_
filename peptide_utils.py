@@ -314,7 +314,7 @@ def convert_to_mda_writer(res_ids, bb_coords):
         atom2res.append(i)
         atom2res.append(i)
 
-    uni = mda.Universe.empty(n_atoms=bb_coords.size(0), n_residues=len(res_ids), atom_resindex=atom2res)
+    uni = mda.Universe.empty(n_atoms=len(atom_names), n_residues=len(res_ids), atom_resindex=atom2res)
     uni.add_TopologyAttr("name", atom_names)
     uni.add_TopologyAttr("resname", decoded_residues)
 
