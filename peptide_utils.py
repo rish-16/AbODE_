@@ -297,7 +297,6 @@ def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/"):
     # bb_split = bb_coords_split[sp]
 
     decoded_coords = decode_polar_coords(bb_coords) # (N_res, 9)
-    print ("decoded", decoded_coords.shape)
     decoded_coords = decoded_coords.reshape(len(res_ids)*3, 3)
 
     atom_names = []
@@ -329,7 +328,6 @@ def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/"):
     uni.add_TopologyAttr('bonds', bonds)
 
     uni.atoms.positions = decoded_coords.numpy()
-
 
     with mda.Writer(f"{save_dir}/generated_peptide_{int(time.time())}.pdb", len(uni.atoms)) as w:
         w.write(uni)
