@@ -331,7 +331,7 @@ def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/"):
     uni.atoms.positions = decoded_coords.numpy()
 
 
-    with mda.Writer(f"{save_dir}/generated_peptide_{int(time.time())}.pdb", len(mda.atoms)) as w:
+    with mda.Writer(f"{save_dir}/generated_peptide_{int(time.time())}.pdb", len(uni.atoms)) as w:
         w.write(uni)
 
     print (f"Saved molecule")
