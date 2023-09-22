@@ -70,7 +70,7 @@ def generate(model, N_peptides, N_residues):
         data = Data(x=final_input_features, edge_index=edges, a_index=aa_idx.view(1,-1))
         batch.append(data)
 
-    for data in batch:
+    for data in batch: # generate 1 molecule at a time (TODO: batching is buggy)
         batch_data = Batch.from_data_list([data])
         batch_data = batch_data.to(device)
         params = [batch_data.edge_index, batch_data.a_index]
@@ -92,6 +92,7 @@ def generate(model, N_peptides, N_residues):
 
         y_pd = y_pd[-1] # get final timestep z(T)
         amino_acids_ids = torch.softmax(y_pd[:, :28], 1).argmax()
+        print (amino_acids_ids)
         polar_coords = y_pd[:, 28:37]
 
         print (amino_acids_ids.shape, polar_coords.shape)

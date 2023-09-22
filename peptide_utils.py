@@ -281,50 +281,49 @@ def decode_polar_coords(bb_combined):
     cart_true = _transform_to_cart(coords_r, coords_theta, coords_phi)
     return cart_true
 
-def convert_to_mda_writer(res_ids, bb_coords, chunk_sizes):
+def convert_to_mda_writer(res_ids, bb_coords):
     """
     res_ids are (N, 1)
     bb_coords are (N, 9) for {N, Ca, C}, each with xyz coordinates
     """
 
-    res_ids_split = torch.split(res_ids, chunk_sizes, dim=0)
-    bb_coords_split = torch.split(bb_coords, chunk_sizes, dim=0)
-    
-    for sp in range(len(res_ids_split)):
-        res_split = res_ids_split[sp]
-        bb_split = bb_coords_split[sp]
+    # res_ids_split = torch.split(res_ids, chunk_sizes, dim=0)
+    # bb_coords_split = torch.split(bb_coords, chunk_sizes, dim=0)
 
-        decoded_coords = decode_polar_coords(bb_split) # (N_res, 9)
-        print ("decoded", decoded_coords.shape)
+    # res_split = res_ids_split[sp]
+    # bb_split = bb_coords_split[sp]
 
-        break
+    decoded_coords = decode_polar_coords(bb_coords) # (N_res, 9)
+    print ("decoded", decoded_coords.shape)
 
-        # uni = mda.Universe.empty(n_atoms=bb_coords.size(0), n_residues=len(res_split))
-        # atom_names = []
-        # for _ in range(len(res_split)):
-        #     atom_names.append("N")
-        #     atom_names.append("CA")
-        #     atom_names.append("C")
+    break
 
-        # assert len(atom_names) == bb_coords.size(0)
+    # uni = mda.Universe.empty(n_atoms=bb_coords.size(0), n_residues=len(res_split))
+    # atom_names = []
+    # for _ in range(len(res_split)):
+    #     atom_names.append("N")
+    #     atom_names.append("CA")
+    #     atom_names.append("C")
 
-        # possible_residues = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20', 'ALA', 'LEU', 'MLE', 'NAL', 'NLE', 'PHE', 'PRO']
-        # res_mapper = {i : sym for i, sym in enumerate(possible_residues)}
-        # decoded_residues = [res_mapper[idx] for idx in res_split]
+    # assert len(atom_names) == bb_coords.size(0)
 
-        # uni.add_TopologyAttr("name", ["N", "CA", "C"] * len(res_split))
-        # uni.add_TopologyAttr("resname", decoded_residues)
+    # possible_residues = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20', 'ALA', 'LEU', 'MLE', 'NAL', 'NLE', 'PHE', 'PRO']
+    # res_mapper = {i : sym for i, sym in enumerate(possible_residues)}
+    # decoded_residues = [res_mapper[idx] for idx in res_split]
 
-        # bonds = []
-        # for o in range(0, len(atom_names)-1):
-        #     bonds.append([i, i+1]) # ij
-        #     bonds.append([i+i, i]) # ji
-        # uni.add_TopologyAttr('bonds', bonds)
+    # uni.add_TopologyAttr("name", ["N", "CA", "C"] * len(res_split))
+    # uni.add_TopologyAttr("resname", decoded_residues)
 
-        # uni.atoms.positions = bb_split.numpy()
+    # bonds = []
+    # for o in range(0, len(atom_names)-1):
+    #     bonds.append([i, i+1]) # ij
+    #     bonds.append([i+i, i]) # ji
+    # uni.add_TopologyAttr('bonds', bonds)
 
-        # with mda.Writer(f"generated_peptide_{sp}.pdb", len(mda.atoms)) as w:
-        #     w.write(uni)
+    # uni.atoms.positions = bb_split.numpy()
+
+    # with mda.Writer(f"generated_peptide_{sp}.pdb", len(mda.atoms)) as w:
+    #     w.write(uni)
 
     print (f"Saved {len(res_ids_split)} molecules")
 
