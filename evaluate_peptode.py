@@ -29,7 +29,7 @@ model = PeptODE_uncond(c_in=37, n_layers=4)
 model = model.to(device) # 37 features (28 for amino acids, 9 for spatial features)
 optim = torch.optim.Adam(model.parameters())
 
-model.load("ckpt/peptode_model_epoch_final.pt")
+model.load("peptode_ckpt/peptode_model_epoch_final.pt")
 
 t_begin = 0
 t_end = 1
