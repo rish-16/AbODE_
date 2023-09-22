@@ -44,7 +44,7 @@ def generate(model, N_peptides, N_residues):
     batch = []
     for n in range(N_peptides):
         n_res = N_residues[n]
-        input_peptide_labels = float(1 / 28) * torch.ones(size=(N_res, 28))
+        input_peptide_labels = float(1 / 28) * torch.ones(size=(n_res, 28))
         input_peptide_labels = input_peptide_labels.view(-1, 28)
         amino_index = torch.tensor([i for i in range(n_res)]).view(-1, 1).float()
         temp_coords = peptide_pos_features.view(-1, 3, 3)
