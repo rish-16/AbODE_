@@ -23,6 +23,10 @@ peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("
 n_instances = len(peptide_data)
 train_size = int(0.8 * n_instances)
 peptide_data_test = peptide_data[train_size:]
+peptide_data_train = peptide_data[:train_size]
+
+avg_first_coordinates = np.mean([data.y[0, :][28:37].numpy() for data in peptide_data_train], axis=0) # get first residue from every instance
+avg_last_coordinates = np.mean([data.y[-1, :][28:37].numpy() for data in peptide_data_train], axis=0) # get last residue from every instance
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -43,13 +47,14 @@ t = torch.tensor(t_space).to(device)
 def generate(model, N_peptides, N_residues):
     batch = []
     for n in range(N_peptides):
+        
         n_res = N_residues[n]
+        peptide_pos_features = torch.randn(n_res, 9)
         input_peptide_labels = float(1 / 28) * torch.ones(size=(n_res, 28))
         input_peptide_labels = input_peptide_labels.view(-1, 28)
         amino_index = torch.tensor([i for i in range(n_res)]).view(-1, 1).float()
-        temp_coords = peptide_pos_features.view(-1, 3, 3)
-
-        input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), n_res)).view(-1, 9)
+        
+        input_ab_coords = torch.from_numpy(np.linspace(avg_first_coordinates, avg_last_coordinates, n_res)).view(-1, 9)
         final_input_features = torch.cat([input_peptide_labels, input_ab_coords], dim=1) # z_i(t) = [a_i(t), s_i(t)]
 
         edges = []

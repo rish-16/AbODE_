@@ -102,8 +102,8 @@ def process_data_mda(path):
 
 def get_graph_data_pyg(mda_data):
     all_data = []
-    for record in mda_data:
-        N_res = len(record['residues'])
+    for ii, record in enumerate(mda_data):
+        N_res = len(record['residues']) 
         all_coords = record['x'].reshape(-1, 9)
 
         peptide_coords_forward_rolled = torch.roll(all_coords, 1, 0)
@@ -124,6 +124,9 @@ def get_graph_data_pyg(mda_data):
 
         # s_i = <r_i, a_i, g_i>
         peptide_pos_features = torch.cat((r_norm, mid_angle, normal_angle), dim=2).view(-1, 9) # s_i
+
+        # if ii == 0: 
+            # print (peptide_pos_features) 
 
         label_features = record['aa']
         assert label_features.size(0) == peptide_pos_features.size(0), f"size mismatch {label_features.shape} AND {peptide_pos_features.shape}"
