@@ -296,16 +296,14 @@ def convert_to_mda_writer(res_ids, bb_coords):
     decoded_coords = decode_polar_coords(bb_coords) # (N_res, 9)
     print ("decoded", decoded_coords.shape)
 
-    break
+    uni = mda.Universe.empty(n_atoms=bb_coords.size(0), n_residues=len(res_ids))
+    atom_names = []
+    for _ in range(len(res_ids)):
+        atom_names.append("N")
+        atom_names.append("CA")
+        atom_names.append("C")
 
-    # uni = mda.Universe.empty(n_atoms=bb_coords.size(0), n_residues=len(res_split))
-    # atom_names = []
-    # for _ in range(len(res_split)):
-    #     atom_names.append("N")
-    #     atom_names.append("CA")
-    #     atom_names.append("C")
-
-    # assert len(atom_names) == bb_coords.size(0)
+    assert len(atom_names) == bb_coords.size(0)
 
     # possible_residues = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20', 'ALA', 'LEU', 'MLE', 'NAL', 'NLE', 'PHE', 'PRO']
     # res_mapper = {i : sym for i, sym in enumerate(possible_residues)}
