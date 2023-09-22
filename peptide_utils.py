@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-import math, random, sys, argparse, os, json, csv
+import math, random, sys, argparse, os, json, csv, time
 import numpy as np
 import MDAnalysis as mda
 from pprint import pprint
@@ -281,11 +281,14 @@ def decode_polar_coords(bb_combined):
     cart_true = _transform_to_cart(coords_r, coords_theta, coords_phi)
     return cart_true
 
-def convert_to_mda_writer(res_ids, bb_coords):
+def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/"):
     """
     res_ids are (N, 1)
     bb_coords are (N, 9) for {N, Ca, C}, each with xyz coordinates
     """
+
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
 
     # res_ids_split = torch.split(res_ids, chunk_sizes, dim=0)
     # bb_coords_split = torch.split(bb_coords, chunk_sizes, dim=0)
@@ -327,7 +330,8 @@ def convert_to_mda_writer(res_ids, bb_coords):
 
     uni.atoms.positions = decoded_coords.numpy()
 
-    with mda.Writer(f"generated_peptide_{sp}.pdb", len(mda.atoms)) as w:
+
+    with mda.Writer(f"{save_dir}/generated_peptide_{int(time.time())}.pdb", len(mda.atoms)) as w:
         w.write(uni)
 
     print (f"Saved molecule")
