@@ -71,6 +71,7 @@ def generate(model, N_peptides, N_residues):
         batch.append(data)
 
     batch = Batch.from_data_list(batch)
+    batch = batch.to(device)
     params = [batch.edge_index, batch.a_index]
     model.update_param(params)
     x = batch.x
