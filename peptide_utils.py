@@ -305,10 +305,10 @@ def convert_to_mda_writer(res_ids, bb_coords):
 
     possible_residues = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20', 'ALA', 'LEU', 'MLE', 'NAL', 'NLE', 'PHE', 'PRO']
     res_mapper = {i : sym for i, sym in enumerate(possible_residues)}
-    decoded_residues = [res_mapper[idx] for idx in res_split]
+    decoded_residues = [res_mapper[idx] for idx in res_ids]
     print (decoded_residues)
 
-    uni.add_TopologyAttr("name", ["N", "CA", "C"] * len(res_split))
+    uni.add_TopologyAttr("name", ["N", "CA", "C"] * len(res_ids))
     uni.add_TopologyAttr("resname", decoded_residues)
 
     # bonds = []
