@@ -97,6 +97,6 @@ def generate(model, N_peptides, N_residues):
 
         print (amino_acids_ids.shape, polar_coords.shape)
 
-        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, N_residues)
+        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords)
 
 generate(model, 1, [6])
