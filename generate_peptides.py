@@ -94,7 +94,7 @@ def generate(model, N_peptides, N_residues):
         amino_acids_ids = torch.softmax(y_pd[:, :28], 1).argmax()
         polar_coords = y_pd[:, 28:37]
 
-        print (amino_acids.shape, polar_coords.shape)
+        print (amino_acids_ids.shape, polar_coords.shape)
 
         peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, N_residues)
 
