@@ -296,7 +296,6 @@ def convert_to_mda_writer(res_ids, bb_coords):
     decoded_coords = decode_polar_coords(bb_coords) # (N_res, 9)
     print ("decoded", decoded_coords.shape)
 
-    uni = mda.Universe.empty(n_atoms=bb_coords.size(0), n_residues=len(res_ids))
     atom_names = []
     for _ in range(len(res_ids)):
         atom_names.append("N")
@@ -308,7 +307,15 @@ def convert_to_mda_writer(res_ids, bb_coords):
     decoded_residues = [res_mapper[idx.item()] for idx in res_ids]
     print (decoded_residues)
 
-    uni.add_TopologyAttr("name", ["N", "CA", "C"] * len(res_ids))
+    atom_names = ["N", "CA", "C"] * len(res_ids)
+    atom2res = []
+    for i in range(len(res_ids)):
+        atom2res.append(i)
+        atom2res.append(i)
+        atom2res.append(i)
+
+    uni = mda.Universe.empty(n_atoms=bb_coords.size(0), n_residues=len(res_ids), atom_resindex=atom2res)
+    uni.add_TopologyAttr("name", atom_names)
     uni.add_TopologyAttr("resname", decoded_residues)
 
     # bonds = []
