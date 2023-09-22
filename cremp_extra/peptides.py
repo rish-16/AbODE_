@@ -6,7 +6,7 @@ from rdkit import Chem
 
 from . import chem
 
-AMINO_ACID_DATA_PATH = Path(__file__).resolve().parent / "data/amino_acids.csv"
+AMINO_ACID_DATA_PATH = Path(__file__).resolve().parent / "amino_acids.csv"
 AMINO_ACID_DATA = pd.read_csv(AMINO_ACID_DATA_PATH, index_col="aa")
 AMINO_ACID_DATA["residue_mol"] = AMINO_ACID_DATA["residue_smiles"].map(Chem.MolFromSmiles)
 
