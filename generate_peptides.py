@@ -70,31 +70,32 @@ def generate(model, N_peptides, N_residues):
         data = Data(x=final_input_features, edge_index=edges, a_index=aa_idx.view(1,-1))
         batch.append(data)
 
-    batch = Batch.from_data_list(batch)
-    batch = batch.to(device)
-    params = [batch.edge_index, batch.a_index]
-    model.update_param(params)
-    x = batch.x
+    for data in batch:
+        batch_data = Batch.from_data_list([data])
+        batch_data = batch_data.to(device)
+        params = [batch_data.edge_index, batch_data.a_index]
+        model.update_param(params)
+        x = batch_data.x
 
-    options = {
-        'dtype': torch.float64,
-        # 'first_step': 1.0e-9,
-        # 'grid_points': t,
-    }
-    
-    y_pd = odeint(
-        model, x, t, 
-        method="adaptive_heun", 
-        rtol=5e-1, atol=5e-1,
-        options=options
-    )
+        options = {
+            'dtype': torch.float64,
+            # 'first_step': 1.0e-9,
+            # 'grid_points': t,
+        }
+        
+        y_pd = odeint(
+            model, x, t, 
+            method="adaptive_heun", 
+            rtol=5e-1, atol=5e-1,
+            options=options
+        )
 
-    y_pd = y_pd[-1] # get final timestep z(T)
-    amino_acids_ids = torch.softmax(y_pd[:, :28], 1).argmax()
-    polar_coords = y_pd[:, 28:37]
+        y_pd = y_pd[-1] # get final timestep z(T)
+        amino_acids_ids = torch.softmax(y_pd[:, :28], 1).argmax()
+        polar_coords = y_pd[:, 28:37]
 
-    print (amino_acids.shape, polar_coords.shape)
+        print (amino_acids.shape, polar_coords.shape)
 
-    peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, N_residues)
+        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, N_residues)
 
 generate(model, 1, [6])
