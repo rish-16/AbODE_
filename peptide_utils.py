@@ -269,6 +269,62 @@ def evaluate_model(model, loader, device, odeint, time):
 
     return metrics
 
+def decode_polar_coords(bb_combined):
+    # (N_res, (r,a,g)_n + (r,a,g)_ca + (r,a,g)_c)
+    coords_r =  truth_polar_bb_combinedcoord[:, [0,3,6]]
+    coords_theta = bb_combined[:, [1,4,7]]
+    coords_phi = 3.14/2 - bb_combined[:, [2,5,8]]
+
+    cart_true = _transform_to_cart(coords_r, coords_theta, coords_phi)
+    return cart_true
+
+def convert_to_mda_writer(res_ids, bb_coords, chunk_sizes):
+    """
+    res_ids are (N, 1)
+    bb_coords are (N, 9) for {N, Ca, C}, each with xyz coordinates
+    """
+
+    res_ids_split = torch.split(res_ids, chunk_sizes, dim=0)
+    bb_coords_split = torch.split(bb_coords, chunk_sizes, dim=0)
+    
+    for sp in range(len(res_ids_split)):
+        res_split = res_ids_split[sp]
+        bb_split = bb_coords_split[sp]
+
+        decoded_coords = decode_polar_coords(bb_split) # (N_res, 9)
+        print ("decoded", decoded_coords.shape)
+
+        break
+
+        # uni = mda.Universe.empty(n_atoms=bb_coords.size(0), n_residues=len(res_split))
+        # atom_names = []
+        # for _ in range(len(res_split)):
+        #     atom_names.append("N")
+        #     atom_names.append("CA")
+        #     atom_names.append("C")
+
+        # assert len(atom_names) == bb_coords.size(0)
+
+        # possible_residues = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20', 'ALA', 'LEU', 'MLE', 'NAL', 'NLE', 'PHE', 'PRO']
+        # res_mapper = {i : sym for i, sym in enumerate(possible_residues)}
+        # decoded_residues = [res_mapper[idx] for idx in res_split]
+
+        # uni.add_TopologyAttr("name", ["N", "CA", "C"] * len(res_split))
+        # uni.add_TopologyAttr("resname", decoded_residues)
+
+        # bonds = []
+        # for o in range(0, len(atom_names)-1):
+        #     bonds.append([i, i+1]) # ij
+        #     bonds.append([i+i, i]) # ji
+        # uni.add_TopologyAttr('bonds', bonds)
+
+        # uni.atoms.positions = bb_split.numpy()
+
+        # with mda.Writer(f"generated_peptide_{sp}.pdb", len(mda.atoms)) as w:
+        #     w.write(uni)
+
+    print (f"Saved {len(res_ids_split)} molecules")
+
 if __name__ == "__main__":
     peptide_data = get_graph_data_pyg(process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
     pprint (peptide_data[:5])
