@@ -46,10 +46,10 @@ def generate(model, N_peptides, N_residues):
         n_res = N_residues[n]
         input_peptide_labels = float(1 / 28) * torch.ones(size=(N_res, 28))
         input_peptide_labels = input_peptide_labels.view(-1, 28)
-        amino_index = torch.tensor([i for i in range(N_res)]).view(-1, 1).float()
+        amino_index = torch.tensor([i for i in range(n_res)]).view(-1, 1).float()
         temp_coords = peptide_pos_features.view(-1, 3, 3)
 
-        input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), N_res)).view(-1, 9)
+        input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), n_res)).view(-1, 9)
         final_input_features = torch.cat([input_peptide_labels, input_ab_coords], dim=1) # z_i(t) = [a_i(t), s_i(t)]
 
         edges = []
