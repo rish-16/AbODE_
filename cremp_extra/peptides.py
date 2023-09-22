@@ -1,13 +1,9 @@
-"""
-Taken from
-https://github.com/Genentech/ringer/blob/31a0482bddbc608a3e10f719a858d75988738ead/ringer/utils/peptides.py
-"""
-
 from pathlib import Path
 from typing import Dict, FrozenSet, List, Optional
 
 import pandas as pd
 from rdkit import Chem
+
 from . import chem
 
 AMINO_ACID_DATA_PATH = Path(__file__).resolve().parent / "data/amino_acids.csv"

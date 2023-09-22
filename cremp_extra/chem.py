@@ -1,9 +1,3 @@
-"""
-Taken from
-https://github.com/Genentech/ringer/blob/31a0482bddbc608a3e10f719a858d75988738ead/ringer/utils/chem.py
-"""
-
-
 from typing import List, Optional, Set, Union
 
 import numpy as np

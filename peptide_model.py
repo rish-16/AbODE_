@@ -17,6 +17,7 @@ class PeptODE_uncond(nn.Module):
         activation_fns = []
         layers_mlp.append(tg.nn.TransformerConv(c_in+1, 128, heads=1))
         layers_mlp.append(tg.nn.TransformerConv(128, 256, heads=1))
+        layers_mlp.append(tg.nn.TransformerConv(256, 256, heads=1))
         layers_mlp.append(tg.nn.TransformerConv(256, 64, heads=1))
         layers_mlp.append(tg.nn.TransformerConv(64, c_in, heads=1))
 
