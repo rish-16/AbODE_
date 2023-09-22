@@ -91,7 +91,7 @@ def generate(model, N_peptides, N_residues):
         )
 
         y_pd = y_pd[-1] # get final timestep z(T)
-        amino_acids_ids = torch.softmax(y_pd[:, :28], 1).argmax()
+        amino_acids_ids = torch.softmax(y_pd[:, :28], 1).argmax(dim=0)
         print (amino_acids_ids)
         polar_coords = y_pd[:, 28:37]
 

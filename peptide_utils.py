@@ -274,7 +274,7 @@ def evaluate_model(model, loader, device, odeint, time):
 
 def decode_polar_coords(bb_combined):
     # (N_res, (r,a,g)_n + (r,a,g)_ca + (r,a,g)_c)
-    coords_r =  truth_polar_bb_combinedcoord[:, [0,3,6]]
+    coords_r =  bb_combined[:, [0,3,6]]
     coords_theta = bb_combined[:, [1,4,7]]
     coords_phi = 3.14/2 - bb_combined[:, [2,5,8]]
 
