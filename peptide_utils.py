@@ -295,6 +295,7 @@ def convert_to_mda_writer(res_ids, bb_coords):
 
     decoded_coords = decode_polar_coords(bb_coords) # (N_res, 9)
     print ("decoded", decoded_coords.shape)
+    decoded_coords = decoded_coords.reshape(len(res_ids)*3, 3)
 
     atom_names = []
     for _ in range(len(res_ids)):
@@ -318,18 +319,18 @@ def convert_to_mda_writer(res_ids, bb_coords):
     uni.add_TopologyAttr("name", atom_names)
     uni.add_TopologyAttr("resname", decoded_residues)
 
-    # bonds = []
-    # for o in range(0, len(atom_names)-1):
-    #     bonds.append([i, i+1]) # ij
-    #     bonds.append([i+i, i]) # ji
-    # uni.add_TopologyAttr('bonds', bonds)
+    bonds = []
+    for o in range(0, len(atom_names)-1):
+        bonds.append([i, i+1]) # ij
+        bonds.append([i+i, i]) # ji
+    uni.add_TopologyAttr('bonds', bonds)
 
-    # uni.atoms.positions = bb_split.numpy()
+    uni.atoms.positions = decoded_coords.numpy()
 
-    # with mda.Writer(f"generated_peptide_{sp}.pdb", len(mda.atoms)) as w:
-    #     w.write(uni)
+    with mda.Writer(f"generated_peptide_{sp}.pdb", len(mda.atoms)) as w:
+        w.write(uni)
 
-    print (f"Saved {len(res_ids_split)} molecules")
+    print (f"Saved molecule")
 
 if __name__ == "__main__":
     peptide_data = get_graph_data_pyg(process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
