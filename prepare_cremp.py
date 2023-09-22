@@ -12,7 +12,7 @@ import peptide_utils
 import featurise_cremp
 
 CREMP_PATH = "/data/rishabh/pickle/"
-pdb_sequences = OS.listdir(CREMP_PATH) 
+pdb_sequences = os.listdir(CREMP_PATH) 
 
 for pdb in pdb_sequences:
     fp = CREMP_PATH + pdb
