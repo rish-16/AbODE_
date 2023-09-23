@@ -119,7 +119,8 @@ def featurize_macrocycle_atoms(
     backbone_atom_labels_ = BACKBONE_ATOM_LABELS_ * bb_reps
     backbone_atom_ids = BACKBONE_ATOM_IDS * bb_reps 
 
-    print ([atom.GetSymbol() for np.array(list(mol.GetAtoms()))[macrocycle_idxs]])
+    MOL = np.array(list(mol.GetAtoms()))[macrocycle_idxs]
+    print ([atom.GetSymbol() for atom in MOL])
 
     for i, atom in enumerate(mol.GetAtoms()):
         idx_atom = mol.GetAtoms()[i]
