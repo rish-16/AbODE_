@@ -83,4 +83,4 @@ for epoch in range(EPOCHS):
         torch.save(model, f"peptode_cremp_ckpt/peptode_cremp_model_epoch_{epoch}.pt")
         torch.save(eval_metrics, f"peptode_cremp_ckpt/peptode_cremp_metrics_epoch_{epoch}.pt")
 
-torch.save(model, f"peptode_cremp_ckpt/peptode_cremp_model_epoch_final.pt")        
+torch.save(model, f"peptode_cremp_ckpt/peptode_cremp_model_epoch_final.pt")

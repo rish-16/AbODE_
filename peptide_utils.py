@@ -20,23 +20,23 @@ from scipy.stats import vonmises
 from scipy.special import softmax
 
 def loss_function_polar(y_pred, y_true):
-    pred_labels = y_pred[:,:28].view(-1, 28)
-    truth_labels = y_true[:,:28].view(-1, 28)
+    pred_labels = y_pred[:,:55].view(-1, 55)
+    truth_labels = y_true[:,:55].view(-1, 5)
     
     celoss = nn.CrossEntropyLoss()
     loss_ce = celoss(pred_labels,truth_labels)
     
-    pred_r = y_pred[:,28].view(-1,1)
-    true_r = y_true[:,28].view(-1,1)
+    pred_r = y_pred[:,55].view(-1,1)
+    true_r = y_true[:,55].view(-1,1)
     
     r_loss = nn.SmoothL1Loss(reduction='mean')
     loss_val = r_loss(pred_r,true_r)
     
-    pred_angle = y_pred[:,29:31].view(-1,2)
-    true_angle = y_true[:,29:31].view(-1,2)
+    pred_angle = y_pred[:,56:58].view(-1, 9)
+    true_angle = y_true[:,56:58].view(-1, 9)
     
     diff_angle = pred_angle - true_angle
-    loss_per_angle = torch.mean(1 - torch.square(torch.cos(diff_angle)),0).view(-1,2)
+    loss_per_angle = torch.mean(1 - torch.square(torch.cos(diff_angle)), 0).view(-1,2)
     total_angle_loss  = loss_per_angle.sum(dim=1)
     
     total_loss = loss_ce + 0.8*(loss_val + total_angle_loss)
@@ -230,8 +230,8 @@ def evaluate_model(model, loader, device, odeint, time):
         y_pd = y_pd[-1] # get final timestep z(T)
         y_truth = batch.y
         
-        pred_labels = y_pd[:, :28].view(-1, 28)
-        truth_labels = y_truth[:, :28].view(-1, 28)
+        pred_labels = y_pd[:, :55].view(-1, 55)
+        truth_labels = y_truth[:, :55].view(-1, 55)
 
         celoss = nn.CrossEntropyLoss()
         loss_ce = celoss(pred_labels, truth_labels)
@@ -239,8 +239,8 @@ def evaluate_model(model, loader, device, odeint, time):
 
         first_residue = batch.first_residue
 
-        pred_polar_coord = y_pd[:,28:37].cpu().detach().numpy().reshape(-1, 3, 3)
-        truth_polar_coord = y_truth[:,28:37].cpu().detach().numpy().reshape(-1, 3, 3)
+        pred_polar_coord = y_pd[:,55:64].cpu().detach().numpy().reshape(-1, 3, 3)
+        truth_polar_coord = y_truth[:,55:64].cpu().detach().numpy().reshape(-1, 3, 3)
         first_residue_coord = first_residue[:, 1, :].cpu().detach().numpy().reshape(-1, 3)
 
         rmsd_N = kabsch_rmsd(pred_polar_coord[:][:,0][:], truth_polar_coord[:][:,0][:])
@@ -318,7 +318,8 @@ def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/", pe
         atom_names.append("CA")
         atom_names.append("C")
 
-    possible_residues = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20', 'ALA', 'LEU', 'MLE', 'NAL', 'NLE', 'PHE', 'PRO']
+    # possible_residues = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20', 'ALA', 'LEU', 'MLE', 'NAL', 'NLE', 'PHE', 'PRO']
+    possible_residues = ['A', 'K', 'S', 'E', 'MeI', 'Mei', 'l', 'Mev', 'MeV', 'W', 'MeW', 'Mey', 'L', 'c', 'MeQ', 'MeN', 'q', 'MeC', 'Mef', 'Y', 'MeY', 'a', 'i', 'MeF', 'Meq', 'w', 'p', 'G', 'D', 'Met', 'Mew', 'N', 'Mec', 'Mes', 'Mel', 'P', 'F', 'I', 'MeL', 'f', 'Q', 'T', 'MeS', 'n', 'MeA', 'y', 'MeG', 'MeT', 's', 'Men', 't', 'C', 'V', 'H']
     res_mapper = {i : sym for i, sym in enumerate(possible_residues)}
     decoded_residues = [res_mapper[idx.item()] for idx in res_ids]
     print (decoded_residues)
