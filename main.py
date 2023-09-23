@@ -23,7 +23,7 @@ cremp_data = torch.load("cremp_pyg_data_small.pt")
 print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
-peptide_data_train, peptide_data_test = cremp_data[:train_size], cremp_data[train_size:]
+peptide_data_train, peptide_data_test = cremp_data[:train_size], cremp_data[train_size:][:50]
 train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=256)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
