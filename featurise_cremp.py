@@ -109,6 +109,13 @@ def featurize_macrocycle_atoms(
                 f"Couldn't get macrocycle indices for '{Chem.MolToSmiles(Chem.RemoveHs(mol))}'"
             )
 
+    BACKBONE_ATOM_LABELS = ["N", "Calpha", "CO"]
+    BACKBONE_ATOM_IDS = [0, 1, 2]
+    pprint (macrocycle_idxs)           
+    reps = len(macrocycle_idxs) // 3
+    atom_labels = BACKBONE_ATOM_LABELS * reps
+    atom_ids = BACKBONE_ATOM_IDS * reps 
+
     atom_features = {}
     ring_info = mol.GetRingInfo()
     morgan_fingerprint_generator = rdFingerprintGenerator.GetMorganGenerator(
@@ -124,7 +131,7 @@ def featurize_macrocycle_atoms(
             atom_idx: symbol for atom_idxs, symbol in residues.items() for atom_idx in atom_idxs
         }
 
-        pprint (atom_to_residue)
+        # pprint (atom_to_residue)
 
     all_conformers = mol.GetConformers()
     print ("Num conformers", len(all_conformers))
