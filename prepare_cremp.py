@@ -14,7 +14,7 @@ import featurise_cremp
 CREMP_PATH = "/data/rishabh/pickle/"
 pdb_sequences = os.listdir(CREMP_PATH) 
 
-for pdb in pdb_sequences:
+for pdb in pdb_sequences[1:]:
     fp = CREMP_PATH + pdb
     residues_in_mol = [aa.strip("[]") for aa in pdb.replace("Sar", "MeG").split(".")[:-1]] # ignore 'pickle' at the end
     print (residues_in_mol)
