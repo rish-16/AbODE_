@@ -23,7 +23,7 @@ cremp_data = torch.load("cremp_pyg_data_small.pt")
 print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
-peptide_data_train, peptide_data_test = cremp_data[:train_size], cremp_data[train_size:][:50]
+peptide_data_train, peptide_data_test = cremp_data[:train_size], cremp_data[train_size:][:50] # test size of 50 peptides
 train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=256)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
@@ -62,6 +62,8 @@ for epoch in range(EPOCHS):
 
         # The ODE-function to solve the ODE-system
         # print ("ODE")
+        batch_data.x = torch.cat([torch.rand(batch_data.x[:, :55]), batch_data.x[:, 55:]], dim=1)
+        batch_data.x = batch_data.x.to(device)
         y_pd = odeint(
             model, batch_data.x, t, 
             method="adaptive_heun", 
