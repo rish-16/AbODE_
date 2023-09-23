@@ -137,6 +137,7 @@ def featurize_macrocycle_atoms(
         }
 
         # pprint (atom_to_residue)
+        print (residues)
 
     """        
     conformers = mol.GetConformers()
@@ -148,7 +149,7 @@ def featurize_macrocycle_atoms(
     """
 
     all_conformers = mol.GetConformers()
-    print ("Num conformers:", len(all_conformers))
+    # print ("Num conformers:", len(all_conformers))
     all_conformer_coords = []
     shape_corrector = lambda x,i : x[i:][::3]
     for cix, conformer in enumerate(all_conformers):
@@ -166,7 +167,10 @@ def featurize_macrocycle_atoms(
 
     all_conformer_coords = np.concatenate(all_conformer_coords, axis=0)
     all_conformer_coords = torch.from_numpy(all_conformer_coords)
-    print (all_conformer_coords.shape, all_conformer_coords.size(0) / len(residues_in_mol))
+    # print (all_conformer_coords.shape, all_conformer_coords.size(0) / len(residues_in_mol))
+
+    print (residues_in_mol)
+    print ()
 
     for atom_idx in macrocycle_idxs:
         atom_feature_dict = {}
