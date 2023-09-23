@@ -62,7 +62,7 @@ for epoch in range(EPOCHS):
 
         # The ODE-function to solve the ODE-system
         # print ("ODE")
-        batch_data.x = torch.cat([torch.rand(batch_data.x[:, :55]), batch_data.x[:, 55:]], dim=1)
+        batch_data.x = torch.cat([torch.rand_like(batch_data.x[:, :55]), batch_data.x[:, 55:]], dim=1)
         batch_data.x = batch_data.x.to(device)
         y_pd = odeint(
             model, batch_data.x, t, 
