@@ -62,5 +62,5 @@ if __name__ == "__main__":
     CREMP_PATH = "/data/rishabh/pickle/"
     final_data, size_dist = get_cremp_data(CREMP_PATH)
     print (len(final_data))
-    print (final_data[:10])
+    pprint (final_data[:10])
     torch.save(final_data, "cremp_pyg_data.pt")
