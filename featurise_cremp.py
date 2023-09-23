@@ -168,6 +168,9 @@ def featurize_macrocycle_atoms(
 
         all_conformer_coords.append([bb_pos_n, bb_pos_ca, bb_pos_c])
 
+        if cix > 100:
+            break
+
     return res_ohe, all_conformer_coords
 
 
