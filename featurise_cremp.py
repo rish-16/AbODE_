@@ -119,6 +119,8 @@ def featurize_macrocycle_atoms(
     backbone_atom_labels_ = BACKBONE_ATOM_LABELS_ * bb_reps
     backbone_atom_ids = BACKBONE_ATOM_IDS * bb_reps 
 
+    print ([atom.GetSymbol() for np.array(list(mol.GetAtoms()))[macrocycle_idxs]])
+
     for i, atom in enumerate(mol.GetAtoms()):
         idx_atom = mol.GetAtoms()[i]
         assert idx_atom.GetSymbol() == backbone_atom_labels_[i], f"atom mismatch: {idx_atom.GetSymbol()} – {backbone_atom_labels_[i]} at idx [{i}]"
