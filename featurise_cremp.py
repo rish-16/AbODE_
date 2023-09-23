@@ -119,12 +119,8 @@ def featurize_macrocycle_atoms(
     backbone_atom_labels_ = BACKBONE_ATOM_LABELS_ * bb_reps
     backbone_atom_ids = BACKBONE_ATOM_IDS * bb_reps 
 
-    MOL = np.array(list(mol.GetAtoms()))[macrocycle_idxs]
-    print ([atom.GetSymbol() for atom in MOL])
-
-    for i, atom in enumerate(mol.GetAtoms()):
-        idx_atom = mol.GetAtoms()[i]
-        assert idx_atom.GetSymbol() == backbone_atom_labels_[i], f"atom mismatch: {idx_atom.GetSymbol()} – {backbone_atom_labels_[i]} at idx [{i}]"
+    only_backbone_atoms = np.array(list(mol.GetAtoms()))[macrocycle_idxs].tolist() # grouped into triplets of (N, Ca, C)
+    pprint (only_backbone_atoms)
 
     atom_features = {}
     ring_info = mol.GetRingInfo()
