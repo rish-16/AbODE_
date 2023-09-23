@@ -12,13 +12,13 @@ from rdkit import Chem
 import peptide_utils
 import featurise_cremp
 
-CREMP_PATH = "/data/rishabh/pickle/"
-pdb_sequences = os.listdir(CREMP_PATH) 
+NUM_UNIQUE_AAs = len(featurise_cremp.AMINO_ACID_RESNAMES)
 
-def get_cremp_data():
-    data = []
+def get_cremp_data(CREMP_PATH):
+    final_data = []
     size_dist = []
-    for pdb in pdb_sequences[:4]:
+    pdb_sequences = os.listdir(CREMP_PATH) 
+    for pdb in pdb_sequences:
         fp = CREMP_PATH + pdb
         residues_in_mol = [aa.strip("[]") for aa in pdb.replace("Sar", "MeG").split(".")[:-1]] # ignore 'pickle' at the end
         size_dist.append(len(residues_in_mol))
@@ -29,18 +29,32 @@ def get_cremp_data():
             coords_n, coords_ca, coords_c = conf_coords
             combined_coords = torch.from_numpy([np.concatenate([coords_n, coords_ca, coords_c], axis=1)]) # (N_res, 9)
 
-            final_target_features = torch.cat([ohe_aa, combined_coords], dim=1)
+            converted_rag_polar_coords, input_rand_coords = peptide_utils.convert_coords_to_polar(coords_n, coords_ca, coords_c)
+            final_target_features = torch.cat([ohe_aa, converted_rag_polar_coords], dim=1)
 
-            first_coord = all_coords[0].view(-1, 3, 3)
-            edge_index = radius_graph(coords_ca, r=5, loop=False) # connect residues by C_alpha coordinates
-            data.append(
+            input_peptide_labels = float(1/NUM_UNIQUE_AAs) * torch.ones(len(residues_in_mol), NUM_UNIQUE_AAs) # uniform array
+            input_peptide_labels = input_peptide_labels.view(-1, NUM_UNIQUE_AAs)
+            amino_index = torch.tensor([i for i in range(len(residues_in_mol))]).view(-1, 1).float()
+
+            final_input_features = torch.cat([input_peptide_labels, input_rand_coords], dim=1)
+            
+            first_coord = combined_coords[0].view(-1, 3, 3)
+            edge_index = radius_graph(torch.from_numpy(coords_ca), r=5, loop=False) # connect residues by C_alpha coordinates
+            
+            final_data.append(
                 tg.data.Data(
                     x=ohe_aa,
-                    y=,
+                    y=final_target_features,
                     edge_index=edge_index,
-                    first_res=,
-
+                    first_res=first_coord,
+                    a_index=amino_index.view(1,-1)
                 )
             )
 
-    return data, size_dist, 
+    return final_data, size_dist
+
+if __name__ == "__main__":
+    CREMP_PATH = "/data/rishabh/pickle/"
+    final_data, size_dist = get_cremp_data(CREMP_PATH)
+    print (len(final_data))
+    print (final_data[:10])

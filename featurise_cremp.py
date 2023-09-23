@@ -48,6 +48,17 @@ FORMAL_CHARGE_FEATURE_NAMES = [f"charge{c}" for c in FORMAL_CHARGES] + ["chargeU
 RING_SIZE_FEATURE_NAMES = [f"ringsize{rs}" for rs in RING_SIZES]  # Don't need "unknown" name
 NUM_RING_FEATURE_NAMES = [f"numring{nr}" for nr in NUM_RINGS] + ["numringUNK"]
 
+AMINO_ACID_RESNAMES = ['A', 'K', 'S', 'E', 'MeI', 'Mei', 'l', 'Mev', 'MeV', 'W', 'MeW', 'Mey', 'L', 'c', 'MeQ', 'MeN', 'q', 'MeC', 'Mef', 'Y', 'MeY', 'a', 'i', 'MeF', 'Meq', 'w', 'p', 'G', 'D', 'Met', 'Mew', 'N', 'Mec', 'Mes', 'Mel', 'P', 'F', 'I', 'MeL', 'f', 'Q', 'T', 'MeS', 'n', 'MeA', 'y', 'MeG', 'MeT', 's', 'Men', 't', 'C', 'V', 'H']
+res_mapper = {sym : i for i, sym in enumerate(AMINO_ACID_RESNAMES)}
+
+def onehot_encoder(sym, mapper):
+    vec = [0 for _ in range(len(mapper) + 1)] # extra +1 for unknown element
+    if sym not in mapper:
+        vec[-1] = 1 # set final component as 1 if unknown element
+    else:
+        idx = mapper[sym]
+        vec[idx] = 1
+    return vec
 
 def one_k_encoding(value: Any, choices: List[Any], include_unknown: bool = True) -> List[int]:
     """Create a one-hot encoding with an extra category for uncommon values.
@@ -138,6 +149,8 @@ def featurize_macrocycle_atoms(
         print (atom.GetSymbol(), pos)    
     """
 
+    res_ohe = [onehot_encoder(res, res_mapper) for res in residues_in_mol]
+
     all_conformers = mol.GetConformers()
     # print ("Num conformers:", len(all_conformers))
     all_conformer_coords = []
@@ -155,7 +168,7 @@ def featurize_macrocycle_atoms(
 
         all_conformer_coords.append([bb_pos_n, bb_pos_ca, bb_pos_c])
 
-    return ohe_aa_ids, all_conformer_coords
+    return res_ohe, all_conformer_coords
 
 
 def featurize_macrocycle_atoms_from_file(

@@ -132,7 +132,7 @@ def get_graph_data_pyg(mda_data):
         assert label_features.size(0) == peptide_pos_features.size(0), f"size mismatch {label_features.shape} AND {peptide_pos_features.shape}"
         final_target_features = torch.cat([label_features, peptide_pos_features], dim=1)
 
-        input_peptide_labels = float(1 / 28) * torch.ones(size=(N_res, 28))
+        input_peptide_labels = torch.rand(size=(N_res, 28))
         input_peptide_labels = input_peptide_labels.view(-1, 28)
         amino_index = torch.tensor([i for i in range(N_res)]).view(-1, 1).float()
         temp_coords = peptide_pos_features.view(-1, 3, 3)
@@ -145,13 +145,25 @@ def get_graph_data_pyg(mda_data):
 
     return all_data
 
-def process_data_rdk(rdkit_mols):
-    """
-    - extract N, Ca, C backbone coordinates
-    - extra residue identities
-    """
+def convert_coords_to_polar(coords_n, coords_ca, coords_c):
+    all_coords = torch.cat([coords_n, coords_ca, coords_c], dim=1)
 
-    pass
+    peptide_coords_forward_rolled = torch.roll(all_coords, 1, 0)
+    peptide_diff_forward = all_coords - peptide_coords_forward_rolled
+
+    peptide_coords_backward_rolled = torch.roll(all_coords, -1, 0)
+    peptide_diff_backward = peptide_coords_backward_rolled - all_coords
+    
+    r_norm = torch.norm(peptide_diff_backward.view(-1, 3, 3), dim=2).view(-1, 3, 1) # r_i
+    mid_angle = torch.acos(F.cosine_similarity(peptide_diff_forward.view(-1, 3, 3), peptide_diff_backward.view(-1, 3, 3),dim=2)).view(-1, 3, 1) # alpha_i
+    cross_vector = torch.cross(peptide_diff_forward.view(-1, 3, 3), peptide_diff_backward.view(-1, 3, 3), dim=2).view(-1, 3, 3) # gamma_i
+    normal_angle = torch.acos(F.cosine_similarity(cross_vector, peptide_diff_backward.view(-1, 3, 3), dim=2)).view(-1, 3, 1) # n_i
+
+    peptide_pos_features = torch.cat((r_norm, mid_angle, normal_angle), dim=2).view(-1, 9) # s_i
+    temp_coords = peptide_pos_features.view(-1, 3, 3)
+    input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), N_res)).view(-1, 9)
+
+    return peptide_pos_features, input_ab_coords
 
 def _transform_to_cart(coords_r, coords_theta, coords_phi):
     x_coord_n_true  = coords_r[:,0].view(-1,1)*torch.sin(coords_theta[:,0]).view(-1,1)*torch.cos(coords_phi[:,0]).view(-1,1)
