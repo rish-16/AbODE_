@@ -99,7 +99,7 @@ def featurize_macrocycle_atoms(
         DataFrame where each row is an atom in the macrocycle and each column is a feature.
     """
 
-    mol = mol.RemoveHs()
+    # mol = mol.RemoveHs()
 
     if macrocycle_idxs is None:
         macrocycle_idxs = chem.get_macrocycle_idxs(mol)
