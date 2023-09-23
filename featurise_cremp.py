@@ -120,7 +120,7 @@ def featurize_macrocycle_atoms(
     backbone_atom_ids = BACKBONE_ATOM_IDS * bb_reps 
 
     only_backbone_atoms = np.array(list(mol.GetAtoms()))[macrocycle_idxs].tolist() # grouped into triplets of (N, Ca, C)
-    pprint (only_backbone_atoms)
+    pprint ([(atom.GetSymbol(), atom.position) for atom in only_backbone_atoms])
 
     atom_features = {}
     ring_info = mol.GetRingInfo()
