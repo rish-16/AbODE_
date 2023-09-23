@@ -45,7 +45,7 @@ def get_cremp_data(CREMP_PATH):
                 
                 final_data.append(
                     tg.data.Data(
-                        x=ohe_aa,
+                        x=final_input_features,
                         y=final_target_features,
                         edge_index=edge_index,
                         first_res=first_coord,
