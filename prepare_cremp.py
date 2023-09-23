@@ -19,6 +19,8 @@ def get_cremp_data(CREMP_PATH):
     final_data = []
     size_dist = []
     pdb_sequences = os.listdir(CREMP_PATH) 
+    print ("number of sequences:", len(pdb_sequences))
+    
     for pdb in pdb_sequences:
         try:
             fp = CREMP_PATH + pdb
@@ -26,7 +28,7 @@ def get_cremp_data(CREMP_PATH):
             size_dist.append(len(residues_in_mol))
             ohe_aa, all_conf_coords = featurise_cremp.featurize_macrocycle_atoms_from_file(path=fp, residues_in_mol=residues_in_mol) # return_mol = False
             ohe_aa = torch.tensor(ohe_aa)
-            print (pdb, len(all_conf_coords))
+            # print (pdb, len(all_conf_coords))
             for conf_coords in all_conf_coords:
                 coords_n, coords_ca, coords_c = conf_coords
                 combined_coords = torch.from_numpy(np.concatenate([coords_n, coords_ca, coords_c], axis=1)) # (N_res, 9)
