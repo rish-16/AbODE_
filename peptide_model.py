@@ -174,7 +174,8 @@ class PeptODE_uncond(nn.Module):
         
         for l,layer in enumerate(self.layer_mlp):
             dx_final = layer(dx_final, edge_index=Edge_index)
-            if l !=len(self.layer_mlp)-1: 
-                dx_final = self.activation_mlp[l](dx_final)
+            
+            if l != len(self.layer_mlp)-1: 
+                dx_final = torch.relu(dx_final)
 
         return dx_final.float()        
