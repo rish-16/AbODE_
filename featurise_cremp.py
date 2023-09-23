@@ -149,15 +149,15 @@ def featurize_macrocycle_atoms(
 
     all_conformers = mol.GetConformers()
     print ("Num conformers", len(all_conformers))
-    print ("Num atoms", mol.GetNumAtoms(), len(atom_to_residue))
 
     for cix, conformer in enumerate(all_conformers):
         only_backbone_positions = np.array(list(conformer.GetPositions()))[macrocycle_idxs] # grouped into triplets of (N, Ca, C)
         print (only_backbone_positions.shape)
         for aid, pos in zip(only_backbone_atoms, only_backbone_positions):
             print (aid.GetSymbol(), pos)
+
         print ()
-        if cix > 2:
+        if cix > 0:
             break
 
     for atom_idx in macrocycle_idxs:
