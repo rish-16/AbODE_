@@ -113,7 +113,7 @@ def featurize_macrocycle_atoms(
 
     BACKBONE_ATOM_LABELS = ["N", "Calpha", "CO"]
     BACKBONE_ATOM_IDS = [0, 1, 2]
-    # pprint (macrocycle_idxs)
+    pprint (macrocycle_idxs)
     reps = len(macrocycle_idxs) // 3
     atom_labels = BACKBONE_ATOM_LABELS * reps
     atom_ids = BACKBONE_ATOM_IDS * reps 
