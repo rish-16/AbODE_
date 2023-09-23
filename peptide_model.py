@@ -28,8 +28,8 @@ class PeptODE_uncond(nn.Module):
         # layers_mlp.append(gvpgnn.EGNNLayer(c_in))
         
         activation_fns.append(nn.ReLU())
-        activation_fns.append(nn.Relu())
-        activation_fns.append(nn.Relu())
+        activation_fns.append(nn.ReLU())
+        activation_fns.append(nn.ReLU())
         activation_fns.append(nn.ReLU())
 
         self.layer_mlp = nn.ModuleList(layers_mlp)
