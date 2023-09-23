@@ -98,6 +98,9 @@ def featurize_macrocycle_atoms(
     Returns:
         DataFrame where each row is an atom in the macrocycle and each column is a feature.
     """
+
+    mol = mol.RemoveHs()
+
     if macrocycle_idxs is None:
         macrocycle_idxs = chem.get_macrocycle_idxs(mol)
         if macrocycle_idxs is None:
@@ -120,6 +123,15 @@ def featurize_macrocycle_atoms(
             atom_idx: symbol for atom_idxs, symbol in residues.items() for atom_idx in atom_idxs
         }
 
+        print (atom_to_residue)
+
+    all_conformers = mol.GetConformers()
+    print ("Num conformers", len(all_conformers))
+
+    # for conf in all_conformers:
+    #     for atom in conf:
+
+
     for atom_idx in macrocycle_idxs:
         atom_feature_dict = {}
         atom = mol.GetAtomWithIdx(atom_idx)
@@ -127,50 +139,50 @@ def featurize_macrocycle_atoms(
         atomic_num_onehot = one_k_encoding(atom.GetAtomicNum(), ATOMIC_NUMS)
         atom_feature_dict.update(dict(zip(ATOMIC_NUM_FEATURE_NAMES, atomic_num_onehot)))
 
-        chiral_feature = CHIRAL_TAGS[atom.GetChiralTag()]
-        if use_peptide_stereo:
-            # Only label an atom with the residue L/D tag if the atom is a chiral center
-            if chiral_feature != 0:
-                chiral_feature = PEPTIDE_CHIRAL_TAGS[
-                    peptides.get_amino_acid_stereo(atom_to_residue[atom_idx])
-                ]
-        atom_feature_dict[CHIRAL_TAG_FEATURE_NAME] = chiral_feature
+        # chiral_feature = CHIRAL_TAGS[atom.GetChiralTag()]
+        # if use_peptide_stereo:
+        #     # Only label an atom with the residue L/D tag if the atom is a chiral center
+        #     if chiral_feature != 0:
+        #         chiral_feature = PEPTIDE_CHIRAL_TAGS[
+        #             peptides.get_amino_acid_stereo(atom_to_residue[atom_idx])
+        #         ]
+        # atom_feature_dict[CHIRAL_TAG_FEATURE_NAME] = chiral_feature
 
-        atom_feature_dict[AROMATICITY_FEATURE_NAME] = 1 if atom.GetIsAromatic() else 0
+        # atom_feature_dict[AROMATICITY_FEATURE_NAME] = 1 if atom.GetIsAromatic() else 0
 
-        hybridization_onehot = one_k_encoding(atom.GetHybridization(), HYBRIDIZATION_TYPES)
-        atom_feature_dict.update(dict(zip(HYBRIDIZATION_TYPE_FEATURE_NAMES, hybridization_onehot)))
+        # hybridization_onehot = one_k_encoding(atom.GetHybridization(), HYBRIDIZATION_TYPES)
+        # atom_feature_dict.update(dict(zip(HYBRIDIZATION_TYPE_FEATURE_NAMES, hybridization_onehot)))
 
-        degree_onehot = one_k_encoding(atom.GetTotalDegree(), DEGREES)
-        atom_feature_dict.update(dict(zip(DEGREE_FEATURE_NAMES, degree_onehot)))
+        # degree_onehot = one_k_encoding(atom.GetTotalDegree(), DEGREES)
+        # atom_feature_dict.update(dict(zip(DEGREE_FEATURE_NAMES, degree_onehot)))
 
-        valence_onehot = one_k_encoding(atom.GetTotalValence(), VALENCES)
-        atom_feature_dict.update(dict(zip(VALENCE_FEATURE_NAMES, valence_onehot)))
+        # valence_onehot = one_k_encoding(atom.GetTotalValence(), VALENCES)
+        # atom_feature_dict.update(dict(zip(VALENCE_FEATURE_NAMES, valence_onehot)))
 
-        num_hydrogen_onehot = one_k_encoding(
-            atom.GetTotalNumHs(includeNeighbors=True), NUM_HYDROGENS
-        )
-        atom_feature_dict.update(dict(zip(NUM_HYDROGEN_FEATURE_NAMES, num_hydrogen_onehot)))
+        # num_hydrogen_onehot = one_k_encoding(
+        #     atom.GetTotalNumHs(includeNeighbors=True), NUM_HYDROGENS
+        # )
+        # atom_feature_dict.update(dict(zip(NUM_HYDROGEN_FEATURE_NAMES, num_hydrogen_onehot)))
 
-        charge_onehot = one_k_encoding(atom.GetFormalCharge(), FORMAL_CHARGES)
-        atom_feature_dict.update(dict(zip(FORMAL_CHARGE_FEATURE_NAMES, charge_onehot)))
+        # charge_onehot = one_k_encoding(atom.GetFormalCharge(), FORMAL_CHARGES)
+        # atom_feature_dict.update(dict(zip(FORMAL_CHARGE_FEATURE_NAMES, charge_onehot)))
 
-        in_ring_sizes = [int(ring_info.IsAtomInRingOfSize(atom_idx, size)) for size in RING_SIZES]
-        atom_feature_dict.update(dict(zip(RING_SIZE_FEATURE_NAMES, in_ring_sizes)))
+        # in_ring_sizes = [int(ring_info.IsAtomInRingOfSize(atom_idx, size)) for size in RING_SIZES]
+        # atom_feature_dict.update(dict(zip(RING_SIZE_FEATURE_NAMES, in_ring_sizes)))
 
-        num_rings_onehot = one_k_encoding(int(ring_info.NumAtomRings(atom_idx)), NUM_RINGS)
-        atom_feature_dict.update(dict(zip(NUM_RING_FEATURE_NAMES, num_rings_onehot)))
+        # num_rings_onehot = one_k_encoding(int(ring_info.NumAtomRings(atom_idx)), NUM_RINGS)
+        # atom_feature_dict.update(dict(zip(NUM_RING_FEATURE_NAMES, num_rings_onehot)))
 
-        if include_side_chain_fingerprint:
-            # Fingerprint includes atom in ring that side chain starts at
-            side_chain_idxs = chem.dfs(atom_idx, mol, blocked_idxs=macrocycle_idxs)
-            fingerprint = morgan_fingerprint_generator.GetCountFingerprintAsNumPy(
-                mol, fromAtoms=side_chain_idxs
-            )
-            fingerprint = np.asarray(fingerprint.astype(np.int64), dtype=int)
-            atom_feature_dict.update(dict(zip(fingerprint_feature_names, fingerprint)))
+        # if include_side_chain_fingerprint:
+        #     # Fingerprint includes atom in ring that side chain starts at
+        #     side_chain_idxs = chem.dfs(atom_idx, mol, blocked_idxs=macrocycle_idxs)
+        #     fingerprint = morgan_fingerprint_generator.GetCountFingerprintAsNumPy(
+        #         mol, fromAtoms=side_chain_idxs
+        #     )
+        #     fingerprint = np.asarray(fingerprint.astype(np.int64), dtype=int)
+        #     atom_feature_dict.update(dict(zip(fingerprint_feature_names, fingerprint)))
 
-        atom_features[atom_idx] = atom_feature_dict
+        # atom_features[atom_idx] = atom_feature_dict
 
     atom_features = pd.DataFrame(atom_features).T
     atom_features.index.name = "atom_idx"
@@ -187,20 +199,29 @@ def featurize_macrocycle_atoms_from_file(
     size: int = 2048,
     return_mol: bool = False,
 ) -> Union[pd.DataFrame, Tuple[Chem.Mol, pd.DataFrame]]:
+    
     with open(path, "rb") as f:
-        ensemble_data = pickle.load(f)
-    mol = ensemble_data["rd_mol"]
+        if "?" not in path:
+            ensemble_data = pickle.load(f)
+        else:
+            ensemble_data = None
 
-    features = featurize_macrocycle_atoms(
-        mol,
-        use_peptide_stereo=use_peptide_stereo,
-        residues_in_mol=residues_in_mol,
-        include_side_chain_fingerprint=include_side_chain_fingerprint,
-        radius=radius,
-        size=size,
-    )
+    if ensemble_data:
+        mol = ensemble_data["rd_mol"]
 
-    if return_mol:
-        return mol, features
-    return features
+        features = featurize_macrocycle_atoms(
+            mol,
+            use_peptide_stereo=use_peptide_stereo,
+            residues_in_mol=residues_in_mol,
+            include_side_chain_fingerprint=include_side_chain_fingerprint,
+            radius=radius,
+            size=size,
+        )
 
+        if return_mol:
+            return mol, features
+        return features
+    else:
+        if return_mol:
+            return None, None
+        return None

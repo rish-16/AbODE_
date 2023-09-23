@@ -18,3 +18,5 @@ for pdb in pdb_sequences:
     fp = CREMP_PATH + pdb
     features = featurise_cremp.featurize_macrocycle_atoms_from_file(path=fp) # return_mol = False
     print (features)
+
+    break
