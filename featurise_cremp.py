@@ -130,10 +130,6 @@ def featurize_macrocycle_atoms(
     print ("Num conformers", len(all_conformers))
     print ("Num atoms", mol.GetNumAtoms(), len(atom_to_residue))
 
-    # for conf in all_conformers:
-    #     for atom in conf:
-
-
     for atom_idx in macrocycle_idxs:
         atom_feature_dict = {}
         atom = mol.GetAtomWithIdx(atom_idx)
