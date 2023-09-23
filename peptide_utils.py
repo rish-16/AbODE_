@@ -237,7 +237,7 @@ def evaluate_model(model, loader, device, odeint, time):
         loss_ce = celoss(pred_labels, truth_labels)
         ppl = torch.exp(loss_ce)
 
-        first_residue = batch.first_residue
+        first_residue = batch.first_res
 
         pred_polar_coord = y_pd[:,55:64].cpu().detach().numpy().reshape(-1, 3, 3)
         truth_polar_coord = y_truth[:,55:64].cpu().detach().numpy().reshape(-1, 3, 3)
