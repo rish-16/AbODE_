@@ -162,7 +162,7 @@ def convert_coords_to_polar(coords_n, coords_ca, coords_c):
 
     peptide_pos_features = torch.cat((r_norm, mid_angle, normal_angle), dim=2).view(-1, 9) # s_i
     temp_coords = peptide_pos_features.view(-1, 3, 3)
-    input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), N_res)).view(-1, 9)
+    input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), coords_n.size(0))).view(-1, 9)
 
     return peptide_pos_features, input_ab_coords
 
