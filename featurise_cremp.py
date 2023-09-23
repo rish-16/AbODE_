@@ -103,11 +103,13 @@ def featurize_macrocycle_atoms(
     mol = Chem.RemoveHs(mol)
 
     if macrocycle_idxs is None:
-        macrocycle_idxs = chem.get_macrocycle_idxs(mol)
+        macrocycle_idxs = chem.get_macrocycle_idxs(mol, n_to_c=True)
         if macrocycle_idxs is None:
             raise ValueError(
                 f"Couldn't get macrocycle indices for '{Chem.MolToSmiles(Chem.RemoveHs(mol))}'"
             )
+
+    assert len(macrocycle_idxs) % 3 == 0
 
     BACKBONE_ATOM_LABELS = ["N", "Calpha", "CO"]
     BACKBONE_ATOM_IDS = [0, 1, 2]
