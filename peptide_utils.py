@@ -21,7 +21,7 @@ from scipy.special import softmax
 
 def loss_function_polar(y_pred, y_true):
     pred_labels = y_pred[:,:55].view(-1, 55)
-    truth_labels = y_true[:,:55].view(-1, 5)
+    truth_labels = y_true[:,:55].view(-1, 55)
     
     celoss = nn.CrossEntropyLoss()
     loss_ce = celoss(pred_labels,truth_labels)
