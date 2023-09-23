@@ -16,7 +16,9 @@ pdb_sequences = os.listdir(CREMP_PATH)
 
 for pdb in pdb_sequences:
     fp = CREMP_PATH + pdb
-    features = featurise_cremp.featurize_macrocycle_atoms_from_file(path=fp) # return_mol = False
+    residues_in_mol = [aa.strip("[]") for aa in pdb.replace("Sar", "MeG").split(".")["-1"]] # ignore 'pickle' at the end
+    print (residues_in_mol)
+    features = featurise_cremp.featurize_macrocycle_atoms_from_file(path=fp, residues_in_mol=residues_in_mol) # return_mol = False
     print (features)
 
     break
