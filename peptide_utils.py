@@ -32,8 +32,8 @@ def loss_function_polar(y_pred, y_true):
     r_loss = nn.SmoothL1Loss(reduction='mean')
     loss_val = r_loss(pred_r,true_r)
     
-    pred_angle = y_pred[:,56:58].view(-1, 9)
-    true_angle = y_true[:,56:58].view(-1, 9)
+    pred_angle = y_pred[:,56:58].view(-1, 2)
+    true_angle = y_true[:,56:58].view(-1, 2)
     
     diff_angle = pred_angle - true_angle
     loss_per_angle = torch.mean(1 - torch.square(torch.cos(diff_angle)), 0).view(-1,2)
