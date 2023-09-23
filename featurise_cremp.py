@@ -1,4 +1,5 @@
 import pickle
+from pprint import pprint
 from pathlib import Path
 from typing import Any, List, Optional, Tuple, Union
 
@@ -123,10 +124,11 @@ def featurize_macrocycle_atoms(
             atom_idx: symbol for atom_idxs, symbol in residues.items() for atom_idx in atom_idxs
         }
 
-        print (atom_to_residue)
+        pprint (atom_to_residue)
 
     all_conformers = mol.GetConformers()
     print ("Num conformers", len(all_conformers))
+    print ("Num atoms", mol.GetNumAtoms(), len(atom_to_residue))
 
     # for conf in all_conformers:
     #     for atom in conf:
