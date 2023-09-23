@@ -146,6 +146,7 @@ def get_graph_data_pyg(mda_data):
     return all_data
 
 def convert_coords_to_polar(coords_n, coords_ca, coords_c):
+    coords_n, coords_ca, coords_c = torch.from_numpy(coords_n), torch.from_numpy(coords_ca), torch.from_numpy(coords_c)
     all_coords = torch.cat([coords_n, coords_ca, coords_c], dim=1)
 
     peptide_coords_forward_rolled = torch.roll(all_coords, 1, 0)
