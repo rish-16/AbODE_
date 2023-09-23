@@ -186,8 +186,8 @@ def featurize_macrocycle_atoms(
 
         # atom_features[atom_idx] = atom_feature_dict
 
-    atom_features = pd.DataFrame(atom_features).T
-    atom_features.index.name = "atom_idx"
+    # atom_features = pd.DataFrame(atom_features).T
+    # atom_features.index.name = "atom_idx"
 
     return atom_features
 
