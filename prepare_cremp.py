@@ -1,5 +1,6 @@
 import torch
 import torch_geometric as tg
+from torch_geometric.nn import knn_graph, radius_graph
 
 import math, random, sys, argparse, os, json, csv, time
 import numpy as np
