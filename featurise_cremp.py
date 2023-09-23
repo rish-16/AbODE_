@@ -100,7 +100,7 @@ def featurize_macrocycle_atoms(
         DataFrame where each row is an atom in the macrocycle and each column is a feature.
     """
 
-    mol = Chem.RemoveHs(mol)
+    # mol = Chem.RemoveHs(mol)
 
     if macrocycle_idxs is None:
         macrocycle_idxs = chem.get_macrocycle_idxs(mol, n_to_c=True)
@@ -121,7 +121,7 @@ def featurize_macrocycle_atoms(
 
     for i, atom in enumerate(mol.GetAtoms()):
         idx_atom = mol.GetAtoms()[i]
-        assert idx_atom.GetSymbol() == backbone_atom_labels_[i], f"atom mismatche {idx_atom.GetSymbol()} – {backbone_atom_labels_[i]}"
+        assert idx_atom.GetSymbol() == backbone_atom_labels_[i], f"atom mismatch: {idx_atom.GetSymbol()} – {backbone_atom_labels_[i]}"
 
     atom_features = {}
     ring_info = mol.GetRingInfo()
