@@ -1,4 +1,4 @@
-import pickle
+import pickle, torch
 from pprint import pprint
 from pathlib import Path
 from typing import Any, List, Optional, Tuple, Union
@@ -148,17 +148,24 @@ def featurize_macrocycle_atoms(
     """
 
     all_conformers = mol.GetConformers()
-    print ("Num conformers", len(all_conformers))
-
+    all_conformer_coords = []
+    shape_corrector = lambda x,i : x[i:][::3]
     for cix, conformer in enumerate(all_conformers):
         only_backbone_positions = np.array(list(conformer.GetPositions()))[macrocycle_idxs] # grouped into triplets of (N, Ca, C)
-        print (only_backbone_positions.shape)
-        for aid, pos in zip(only_backbone_atoms, only_backbone_positions):
-            print (aid.GetSymbol(), pos)
+        # print (only_backbone_positions.shape)
+        # for aid, pos in zip(only_backbone_atoms, only_backbone_positions):
+            # print (aid.GetSymbol(), pos)
+        bb_pos_n = shape_corrector(only_backbone_positions, 0)
+        bb_pos_ca = shape_corrector(only_backbone_positions, 1)
+        bb_pos_c = shape_corrector(only_backbone_positions, 2)
 
-        print ()
-        if cix > 0:
-            break
+        bb_coords_concat = np.concatenate([bb_pos_n, bb_pos_ca, bb_pos_c], axis=1) # (x_N, x_Ca, x_C)
+
+        all_conformer_coords.append(bb_coords_concat)
+
+    all_conformer_coords = np.concatenate(all_conformer_coords, axis=0)
+    all_conformer_coords = torch.from_numpy(all_conformer_coords)
+    print (all_conformer_coords.shape)
 
     for atom_idx in macrocycle_idxs:
         atom_feature_dict = {}

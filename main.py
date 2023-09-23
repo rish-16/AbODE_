@@ -16,8 +16,10 @@ import peptide_utils
 - training loop
 """
 
-peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
-n_instances = len(peptide_data)
+# peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
+
+cremp_data = peptide_utils.get_cremp_data()
+n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
 peptide_data_train, peptide_data_test = peptide_data[:train_size], peptide_data[train_size:]
 train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=128)
@@ -77,7 +79,7 @@ for epoch in range(EPOCHS):
         eval_metrics = peptide_utils.evaluate_model(model, test_loader, device, odeint, time=t)
         pprint (eval_metrics, indent=2)
 
-        torch.save(model, f"peptode_ckpt/peptode_model_epoch_{epoch}.pt")
-        torch.save(eval_metrics, f"peptode_ckpt/peptode_metrics_epoch_{epoch}.pt")
+        torch.save(model, f"peptode_cremp_ckpt/peptode_cremp_model_epoch_{epoch}.pt")
+        torch.save(eval_metrics, f"peptode_cremp_ckpt/peptode_cremp_metrics_epoch_{epoch}.pt")
 
-torch.save(model, f"peptode_ckpt/peptode_model_epoch_final.pt")        
+torch.save(model, f"peptode_cremp_ckpt/peptode_cremp_model_epoch_final.pt")        
