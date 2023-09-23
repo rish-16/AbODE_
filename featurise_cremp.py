@@ -112,17 +112,16 @@ def featurize_macrocycle_atoms(
     assert len(macrocycle_idxs) % 3 == 0
 
     BACKBONE_ATOM_LABELS = ["N", "Calpha", "CO"]
+    BACKBONE_ATOM_LABELS_ = ["N", "C", "C"]
     BACKBONE_ATOM_IDS = [0, 1, 2]
-    pprint (macrocycle_idxs)
-    print (len(macrocycle_idxs))
-    reps = len(macrocycle_idxs) // 3
-    atom_labels = BACKBONE_ATOM_LABELS * reps
-    atom_ids = BACKBONE_ATOM_IDS * reps 
+    bb_reps = len(macrocycle_idxs) // 3
+    backbone_atom_labels = BACKBONE_ATOM_LABELS * bb_reps
+    backbone_atom_labels_ = BACKBONE_ATOM_LABELS_ * bb_reps
+    backbone_atom_ids = BACKBONE_ATOM_IDS * bb_reps 
 
-    print (len(atom_ids))
-
-    print (atom_labels)
-    print (atom_ids)
+    for i, atom in enumerate(mol.GetAtoms()):
+        idx_atom = mol.GetAtoms()[i]
+        assert idx_atom.name == backbone_atom_labels_[i], f"atom mismatche {idx_atom.name} – {backbone_atom_labels_[i].name}"
 
     atom_features = {}
     ring_info = mol.GetRingInfo()
