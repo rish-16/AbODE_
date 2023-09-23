@@ -27,7 +27,7 @@ def get_cremp_data(CREMP_PATH):
 
         for conf_coords in all_conf_coords:
             coords_n, coords_ca, coords_c = conf_coords
-            combined_coords = torch.from_numpy([np.concatenate([coords_n, coords_ca, coords_c], axis=1)]) # (N_res, 9)
+            combined_coords = torch.from_numpy(np.concatenate([coords_n, coords_ca, coords_c], axis=1)) # (N_res, 9)
 
             converted_rag_polar_coords, input_rand_coords = peptide_utils.convert_coords_to_polar(coords_n, coords_ca, coords_c)
             final_target_features = torch.cat([ohe_aa, converted_rag_polar_coords], dim=1)
