@@ -10,6 +10,7 @@ from peptide_model import PeptODE_uncond
 
 import utils
 import peptide_utils
+import prepare_cremp
 
 """
 - dataloaders
@@ -18,7 +19,7 @@ import peptide_utils
 
 # peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
 
-cremp_data = peptide_utils.get_cremp_data()
+cremp_data = prepare_cremp.get_cremp_data()
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
 peptide_data_train, peptide_data_test = peptide_data[:train_size], peptide_data[train_size:]
