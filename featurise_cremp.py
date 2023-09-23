@@ -121,7 +121,7 @@ def featurize_macrocycle_atoms(
 
     for i, atom in enumerate(mol.GetAtoms()):
         idx_atom = mol.GetAtoms()[i]
-        assert idx_atom.type == backbone_atom_labels_[i], f"atom mismatche {idx_atom.type} – {backbone_atom_labels_[i]}"
+        assert idx_atom.GetSymbol() == backbone_atom_labels_[i], f"atom mismatche {idx_atom.GetSymbol()} – {backbone_atom_labels_[i]}"
 
     atom_features = {}
     ring_info = mol.GetRingInfo()
