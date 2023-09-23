@@ -65,4 +65,4 @@ CREMP_PATH = "/data/rishabh/pickle/"
 final_data, size_dist = get_cremp_data(CREMP_PATH)
 print (len(final_data))
 pprint (final_data[:10])
-torch.save(final_data, "cremp_pyg_data.pt")
+torch.save(final_data, "cremp_pyg_data_small.pt")
