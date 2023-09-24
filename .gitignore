@@ -1,4 +1,5 @@
 # peptide_data/
 peptode_ckpt/
+peptode_cremp_ckpt/
 cremp_pyg_data.pt
 cremp_pyg_data_small.pt
