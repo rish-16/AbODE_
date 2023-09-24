@@ -80,7 +80,7 @@ for epoch in range(EPOCHS):
 
     print (f"epoch: {epoch} | train loss: {epoch_loss:.5f}")
     if epoch % 20 == 0:
-        eval_metrics = peptide_utils.evaluate_model(model, test_loader, device, odeint, time=t)
+        eval_metrics = peptide_utils.evaluate_model_coordsonly(model, test_loader, device, odeint, time=t)
         pprint (eval_metrics, indent=2)
 
         torch.save(model, f"peptode_cremp_ckpt_lossv3/peptode_cremp_model_epoch_{epoch}.pt")
