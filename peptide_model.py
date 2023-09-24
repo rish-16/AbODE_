@@ -16,10 +16,10 @@ class PeptODE_uncond(nn.Module):
         layers_mlp = []
         activation_fns = []
         layers_mlp.append(tg.nn.TransformerConv(c_in+1, 128, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(128, 256, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(256, 256, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(256, 256, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(256, 64, heads=1))
+        layers_mlp.append(tg.nn.TransformerConv(128, 512, heads=1))
+        layers_mlp.append(tg.nn.TransformerConv(512, 512, heads=1))
+        layers_mlp.append(tg.nn.TransformerConv(512, 512, heads=1))
+        layers_mlp.append(tg.nn.TransformerConv(512, 64, heads=1))
         layers_mlp.append(tg.nn.TransformerConv(64, c_in, heads=1))
 
         # layers_mlp.append(gvpgnn.EGNNLayer(c_in+1))

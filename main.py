@@ -19,7 +19,7 @@ import prepare_cremp
 
 # peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
 
-cremp_data = torch.load("cremp_pyg_data_small.pt")
+cremp_data = torch.load("cremp_pyg_data_small_coordsonly.pt")
 print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
@@ -72,7 +72,7 @@ for epoch in range(EPOCHS):
         )
 
         y_pd = y_pd[-1, :, :].reshape(-1, y_pd.size(-1)) # get last timestep z(T)
-        loss = peptide_utils.loss_function_vm_with_side_chains_v2(y_pd, batch_data.y)
+        loss = peptide_utils.loss_function_vm_with_side_chains_v3(y_pd, batch_data.y)
         loss.backward()
         optim.step()
 
@@ -83,7 +83,7 @@ for epoch in range(EPOCHS):
         eval_metrics = peptide_utils.evaluate_model(model, test_loader, device, odeint, time=t)
         pprint (eval_metrics, indent=2)
 
-        torch.save(model, f"peptode_cremp_ckpt_lossv2/peptode_cremp_model_epoch_{epoch}.pt")
-        torch.save(eval_metrics, f"peptode_cremp_ckpt_lossv2/peptode_cremp_metrics_epoch_{epoch}.pt")
+        torch.save(model, f"peptode_cremp_ckpt_lossv3/peptode_cremp_model_epoch_{epoch}.pt")
+        torch.save(eval_metrics, f"peptode_cremp_ckpt_lossv3/peptode_cremp_metrics_epoch_{epoch}.pt")
 
-torch.save(model, f"peptode_cremp_ckpt_lossv2/peptode_cremp_model_epoch_final.pt")
+torch.save(model, f"peptode_cremp_ckpt_lossv3/peptode_cremp_model_epoch_final.pt")

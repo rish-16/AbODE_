@@ -75,6 +75,50 @@ def loss_function_vm_with_side_chains_v2(y_pred,y_true):
     total_loss = loss_ce + r_loss_val + total_angle_loss
     
     return total_loss    
+
+def loss_function_vm_with_side_chains_v3(y_pred,y_true):
+    
+    kappa = 10
+    pred_labels = y_pred[:,:55].view(-1,55)
+    truth_labels = y_true[:,:55].view(-1,55)
+    
+    celoss = nn.CrossEntropyLoss()
+    loss_ce = celoss(pred_labels,truth_labels)
+    
+    pred_coords = y_pred[:,55:64].view(-1,3,3)
+    true_coords = y_true[:,55:64].view(-1,3,3)
+    
+    pred_x0 = pred_coords[:,:,:1].reshape(-1,1)
+    true_x0 = true_coords[:,:,:1].reshape(-1,1)
+
+    pred_x1 = pred_coords[:,:,1].reshape(-1,1)
+    true_x1 = true_coords[:,:,1].reshape(-1,1)
+
+    pred_x2 = pred_coords[:,:,2].reshape(-1,1)
+    true_x2 = true_coords[:,:,2].reshape(-1,1)
+    
+    x0_loss = nn.MSELoss(reduction="mean")
+    x0_loss_val = r_loss(pred_x0,true_x0)
+    x1_loss = nn.MSELoss(reduction="mean")
+    x1_loss_val = r_loss(pred_x2,true_x1)
+    x2_loss = nn.MSELoss(reduction="mean")
+    x2_loss_val = r_loss(pred_x2,true_x2)
+    
+    # pred_angle_phi = pred_coords[:,:,1].reshape(-1,1)
+    # true_angle_phi = true_coords[:,:,1].reshape(-1,1)
+    
+    # pred_angle_psi = pred_coords[:,:,2].reshape(-1,1)
+    # true_angle_psi = true_coords[:,:,2].reshape(-1,1)
+    
+    # loss_phi = torch.square(torch.cos(pred_angle_phi) - torch.cos(true_angle_phi)) + torch.square(torch.sin(pred_angle_phi) - torch.sin(true_angle_phi))
+    # loss_psi = torch.square(torch.cos(pred_angle_psi) - torch.cos(true_angle_psi)) + torch.square(torch.sin(pred_angle_psi) - torch.sin(true_angle_psi))
+    
+    # total_angle_loss = torch.mean(loss_phi) + torch.mean(loss_psi)
+    total_loss = loss_ce + x0_loss_val + x1_loss_val + x2_loss_val
+
+    # total_loss = loss_ce + r_loss_val + total_angle_loss
+    
+    return total_loss       
     
 
 def process_data_mda(path):
