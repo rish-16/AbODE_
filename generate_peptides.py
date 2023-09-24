@@ -13,20 +13,22 @@ from peptide_model import PeptODE_uncond
 
 import utils
 import peptide_utils
+import prepare_cremp
 
 """
 - dataloaders
 - training loop
 """
 
-peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
-n_instances = len(peptide_data)
+# peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
+cremp_data = torch.load("cremp_pyg_data_small.pt")
+n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
 peptide_data_test = peptide_data[train_size:]
 peptide_data_train = peptide_data[:train_size]
 
-avg_first_coordinates = np.mean([data.y[0, :][28:37].numpy() for data in peptide_data_train], axis=0) # get first residue from every instance
-avg_last_coordinates = np.mean([data.y[-1, :][28:37].numpy() for data in peptide_data_train], axis=0) # get last residue from every instance
+avg_first_coordinates = np.mean([data.y[0, :][55:64].numpy() for data in peptide_data_train], axis=0) # get first residue from every instance
+avg_last_coordinates = np.mean([data.y[-1, :][55:64].numpy() for data in peptide_data_train], axis=0) # get last residue from every instance
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -36,7 +38,7 @@ model = PeptODE_uncond(c_in=37, n_layers=4)
 model = model.to(device) # 37 features (28 for amino acids, 9 for spatial features)
 optim = torch.optim.Adam(model.parameters())
 
-model = torch.load("peptode_ckpt/peptode_model_epoch_final.pt").to(device)
+model = torch.load("peptode_cremp_ckpt/peptode_cremp_model_epoch_140.pt").to(device)
 
 t_begin = 0
 t_end = 1
@@ -51,8 +53,8 @@ def generate(model, N_peptides, N_residues):
         n_res = N_residues[n]
         peptide_pos_features = torch.randn(n_res, 9)
         # input_peptide_labels = float(1 / 28) * torch.ones(size=(n_res, 28))
-        input_peptide_labels = torch.rand(size=(n_res, 28))
-        input_peptide_labels = input_peptide_labels.view(-1, 28)
+        input_peptide_labels = torch.rand(size=(n_res, 55))
+        input_peptide_labels = input_peptide_labels.view(-1, 55)
         amino_index = torch.tensor([i for i in range(n_res)]).view(-1, 1).float()
         
         input_ab_coords = torch.from_numpy(np.linspace(avg_first_coordinates, avg_last_coordinates, n_res)).view(-1, 9)
@@ -92,10 +94,13 @@ def generate(model, N_peptides, N_residues):
         )
 
         y_pd = y_pd[-1].cpu().detach() # get final timestep z(T)
-        amino_acids_ids = torch.softmax(y_pd[:, :28], 1)
+        amino_acids_ids = torch.softmax(y_pd[:, :55], 1)
         amino_acids_ids = amino_acids_ids.argmax(dim=1)
-        polar_coords = y_pd[:, 28:37]
+        polar_coords = y_pd[:, 55:64]
 
-        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii)
+        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii, save_dir="generated_cremp_peptides/")
 
-generate(model, 3, [6,6,6])
+size_dist = np.load("cremp_size_dist.npy")
+sampled_sizes = np.random.choice(a=size_dist, size=(5,))
+sampled_sizes = sampled_sizes.reshape(-1).tolist()
+generate(model, 5, sampled_sizes)
