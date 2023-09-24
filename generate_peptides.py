@@ -24,8 +24,8 @@ import prepare_cremp
 cremp_data = torch.load("cremp_pyg_data_small.pt")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
-peptide_data_test = peptide_data[train_size:]
-peptide_data_train = peptide_data[:train_size]
+peptide_data_test = cremp_data[train_size:]
+peptide_data_train = cremp_data[:train_size]
 
 avg_first_coordinates = np.mean([data.y[0, :][55:64].numpy() for data in peptide_data_train], axis=0) # get first residue from every instance
 avg_last_coordinates = np.mean([data.y[-1, :][55:64].numpy() for data in peptide_data_train], axis=0) # get last residue from every instance
