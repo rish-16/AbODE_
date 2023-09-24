@@ -98,11 +98,11 @@ def loss_function_vm_with_side_chains_v3(y_pred,y_true):
     true_x2 = true_coords[:,:,2].reshape(-1,1)
     
     x0_loss = nn.MSELoss(reduction="mean")
-    x0_loss_val = r_loss(pred_x0,true_x0)
+    x0_loss_val = x0_loss(pred_x0,true_x0)
     x1_loss = nn.MSELoss(reduction="mean")
-    x1_loss_val = r_loss(pred_x2,true_x1)
+    x1_loss_val = x1_loss(pred_x2,true_x1)
     x2_loss = nn.MSELoss(reduction="mean")
-    x2_loss_val = r_loss(pred_x2,true_x2)
+    x2_loss_val = x2_loss(pred_x2,true_x2)
     
     # pred_angle_phi = pred_coords[:,:,1].reshape(-1,1)
     # true_angle_phi = true_coords[:,:,1].reshape(-1,1)
