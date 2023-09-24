@@ -38,7 +38,8 @@ model = PeptODE_uncond(c_in=37, n_layers=4)
 model = model.to(device) # 37 features (28 for amino acids, 9 for spatial features)
 optim = torch.optim.Adam(model.parameters())
 
-model = torch.load("peptode_cremp_ckpt/peptode_cremp_model_epoch_140.pt").to(device)
+# model = torch.load("peptode_cremp_ckpt/peptode_cremp_model_epoch_140.pt").to(device)
+model = torch.load("peptode_cremp_ckpt_lossv2/peptode_cremp_model_epoch_80.pt").to(device)
 
 t_begin = 0
 t_end = 1
@@ -98,7 +99,7 @@ def generate(model, N_peptides, N_residues):
         amino_acids_ids = amino_acids_ids.argmax(dim=1)
         polar_coords = y_pd[:, 55:64]
 
-        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii, save_dir="generated_cremp_peptides/")
+        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii, save_dir="generated_cremp_peptides_lossv2/")
 
 size_dist = np.load("cremp_size_dist.npy")
 sampled_sizes = np.random.choice(a=size_dist, size=(5,))
