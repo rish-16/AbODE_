@@ -72,7 +72,7 @@ for epoch in range(EPOCHS):
         )
 
         y_pd = y_pd[-1, :, :].reshape(-1, y_pd.size(-1)) # get last timestep z(T)
-        loss = peptide_utils.loss_function_polar(y_pd, batch_data.y)
+        loss = peptide_utils.loss_function_vm_with_side_chains_v2(y_pd, batch_data.y)
         loss.backward()
         optim.step()
 

@@ -574,15 +574,15 @@ def loss_function_polar(y_pred,y_true):
 def loss_function_vm_with_side_chains(y_pred,y_true):
     
     kappa = 10
-    pred_labels = y_pred[:,:20].view(-1,20).to(y_pred.device)
-    truth_labels = y_true[:,:20].view(-1,20).to(y_pred.device)
+    pred_labels = y_pred[:,:55].view(-1,55).to(y_pred.device)
+    truth_labels = y_true[:,:55].view(-1,55).to(y_pred.device)
     
     celoss = nn.CrossEntropyLoss()
     loss_ce = celoss(pred_labels,truth_labels)
     
     
-    pred_coords = y_pred[:,20:29].view(-1,3,3).to(y_pred.device)
-    true_coords = y_true[:,20:29].view(-1,3,3).to(y_pred.device)
+    pred_coords = y_pred[:,55:64].view(-1,3,3).to(y_pred.device)
+    true_coords = y_true[:,55:64].view(-1,3,3).to(y_pred.device)
     
     pred_r = pred_coords[:,:,:1].reshape(-1,1).to(y_pred.device)
     true_r = true_coords[:,:,:1].reshape(-1,1).to(y_pred.device)
@@ -603,8 +603,8 @@ def loss_function_vm_with_side_chains(y_pred,y_true):
     nll_r = - normal_lkl.log_prob(r_diff).view(-1,1)
     loss_val = torch.mean(nll_r,dim=0)
     
-    pred_polar_coord = y_pred[:,20:29].view(-1,9)
-    truth_polar_coord = y_true[:,20:29].view(-1,9)
+    pred_polar_coord = y_pred[:,55:64].view(-1,9)
+    truth_polar_coord = y_true[:,55:64].view(-1,9)
     
     Cart_pred,Cart_truth = _get_cartesian(pred_polar_coord,truth_polar_coord)
     cart_lkl = torch.distributions.normal.Normal(torch.tensor([0]).to(y_pred.device), torch.tensor([0.5]).to(y_pred.device)) #1,0.4
