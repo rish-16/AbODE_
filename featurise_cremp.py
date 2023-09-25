@@ -1,4 +1,5 @@
-import pickle, torch
+import torch
+import pickle as pkl
 from pprint import pprint
 from pathlib import Path
 from typing import Any, List, Optional, Tuple, Union
@@ -186,7 +187,10 @@ def featurize_macrocycle_atoms_from_file(
     
     with open(path, "rb") as f:
         if "?" not in path:
-            ensemble_data = pickle.load(f)
+            try:
+                ensemble_data = pkl.load(f)
+            except Exception as e:
+                print (e)
         else:
             ensemble_data = None
 
