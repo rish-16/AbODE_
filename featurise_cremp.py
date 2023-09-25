@@ -176,24 +176,17 @@ def featurize_macrocycle_atoms(
 
 
 def featurize_macrocycle_atoms_from_file(
-    path: Union[str, Path],
-    use_peptide_stereo: bool = True,
-    residues_in_mol: Optional[List[str]] = None,
-    include_side_chain_fingerprint: bool = True,
-    radius: int = 3,
-    size: int = 2048,
-    return_mol: bool = False,
-) -> Union[pd.DataFrame, Tuple[Chem.Mol, pd.DataFrame]]:
+    path,
+    use_peptide_stereo = True,
+    residues_in_mol = None,
+    include_side_chain_fingerprint = True,
+    radius = 3,
+    size = 2048,
+    return_mol = False,
+):
     
     with open(path, "rb") as f:
-        if "?" not in path:
-            try:
-                ensemble_data = pkl.load(f)
-            except Exception as e:
-                print (e)
-                ensemble_data = None
-        else:
-            ensemble_data = None
+        ensemble_data = pkl.load(f)
 
     print (ensemble_data)
     if ensemble_data:

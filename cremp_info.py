@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-CREMP_PATH = "/data/rishabh/pickle/"
+CREMP_PATH = "~/pickle/"
 pdb_sequences = os.listdir(CREMP_PATH) 
 
 sizes = []

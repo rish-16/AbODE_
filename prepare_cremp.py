@@ -21,7 +21,7 @@ def get_cremp_data(CREMP_PATH):
     pdb_sequences = os.listdir(CREMP_PATH) 
     print ("number of sequences:", len(pdb_sequences))
     
-    for pdb in pdb_sequences[1:]:
+    for pdb in pdb_sequences:
         try:
             fp = CREMP_PATH + pdb
             print (fp)
@@ -64,7 +64,7 @@ def get_cremp_data(CREMP_PATH):
     return final_data, size_dist
 
 if __name__ == "__main__":
-    CREMP_PATH = "/data/rishabh/pickle/"
+    CREMP_PATH = "~/pickle/"
     print (CREMP_PATH)
     final_data, size_dist = get_cremp_data(CREMP_PATH)
     print (len(final_data))
