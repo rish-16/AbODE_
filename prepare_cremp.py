@@ -21,7 +21,7 @@ def get_cremp_data(CREMP_PATH):
     pdb_sequences = os.listdir(CREMP_PATH) 
     print ("number of sequences:", len(pdb_sequences))
     
-    for pdb in pdb_sequences:
+    for pdb in pdb_sequences[1:]:
         try:
             fp = CREMP_PATH + pdb
             print (fp)
