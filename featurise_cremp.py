@@ -191,6 +191,7 @@ def featurize_macrocycle_atoms_from_file(
                 ensemble_data = pkl.load(f)
             except Exception as e:
                 print (e)
+                ensemble_data = None
         else:
             ensemble_data = None
 
