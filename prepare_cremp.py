@@ -29,6 +29,7 @@ def get_cremp_data(CREMP_PATH):
             size_dist.append(len(residues_in_mol))
             ohe_aa, all_conf_coords = featurise_cremp.featurize_macrocycle_atoms_from_file(path=fp, residues_in_mol=residues_in_mol) # return_mol = False
             ohe_aa = torch.tensor(ohe_aa)
+            print (ohe_aa.shape)
             print (pdb, len(all_conf_coords))
             for conf_coords in all_conf_coords:
                 coords_n, coords_ca, coords_c = conf_coords
