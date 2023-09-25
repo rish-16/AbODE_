@@ -24,6 +24,7 @@ def get_cremp_data(CREMP_PATH):
     for pdb in pdb_sequences:
         try:
             fp = CREMP_PATH + pdb
+            print (fp)
             residues_in_mol = [aa.strip("[]") for aa in pdb.replace("Sar", "MeG").split(".")[:-1]] # ignore 'pickle' at the end
             size_dist.append(len(residues_in_mol))
             ohe_aa, all_conf_coords = featurise_cremp.featurize_macrocycle_atoms_from_file(path=fp, residues_in_mol=residues_in_mol) # return_mol = False
