@@ -64,7 +64,7 @@ def get_cremp_data(CREMP_PATH):
     return final_data, size_dist
 
 if __name__ == "__main__":
-    CREMP_PATH = "~/pickle/"
+    CREMP_PATH = "../pickle/"
     print (CREMP_PATH)
     final_data, size_dist = get_cremp_data(CREMP_PATH)
     print (len(final_data))
