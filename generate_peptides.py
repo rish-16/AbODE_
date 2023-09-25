@@ -21,7 +21,7 @@ import prepare_cremp
 """
 
 # peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
-cremp_data = torch.load("cremp_pyg_data_small.pt")
+cremp_data = torch.load("cremp_pyg_data_small_coordsonly.pt")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
 peptide_data_test = cremp_data[train_size:]
@@ -39,7 +39,7 @@ model = model.to(device) # 37 features (28 for amino acids, 9 for spatial featur
 optim = torch.optim.Adam(model.parameters())
 
 # model = torch.load("peptode_cremp_ckpt/peptode_cremp_model_epoch_140.pt").to(device)
-model = torch.load("peptode_cremp_ckpt_lossv2/peptode_cremp_model_epoch_80.pt").to(device)
+model = torch.load("peptode_cremp_ckpt_lossv3/peptode_cremp_model_epoch_40.pt").to(device)
 
 t_begin = 0
 t_end = 1
@@ -99,9 +99,9 @@ def generate(model, N_peptides, N_residues):
         amino_acids_ids = amino_acids_ids.argmax(dim=1)
         polar_coords = y_pd[:, 55:64]
 
-        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii, save_dir="generated_cremp_peptides_lossv2/")
+        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii, save_dir="generated_cremp_peptides_lossv3/")
 
 size_dist = np.load("cremp_size_dist.npy")
-sampled_sizes = np.random.choice(a=size_dist, size=(5,))
+sampled_sizes = np.random.choice(a=size_dist, size=(10,))
 sampled_sizes = sampled_sizes.reshape(-1).tolist()
-generate(model, 5, sampled_sizes)
+generate(model, 10, sampled_sizes)
