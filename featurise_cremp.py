@@ -185,6 +185,7 @@ def featurize_macrocycle_atoms_from_file(
 ) -> Union[pd.DataFrame, Tuple[Chem.Mol, pd.DataFrame]]:
     
     with open(path, "rb") as f:
+        print (path)
         if "?" not in path:
             ensemble_data = pickle.load(f)
         else:
