@@ -26,10 +26,11 @@ def get_cremp_data(CREMP_PATH):
             fp = CREMP_PATH + pdb
             print (fp)
             residues_in_mol = [aa.strip("[]") for aa in pdb.replace("Sar", "MeG").split(".")[:-1]] # ignore 'pickle' at the end
+            print (residues_in_mol)
             size_dist.append(len(residues_in_mol))
             ohe_aa, all_conf_coords = featurise_cremp.featurize_macrocycle_atoms_from_file(path=fp, residues_in_mol=residues_in_mol) # return_mol = False
             ohe_aa = torch.tensor(ohe_aa)
-            print (ohe_aa.shape)
+            # print (ohe_aa.shape)
             print (pdb, len(all_conf_coords))
             for conf_coords in all_conf_coords:
                 coords_n, coords_ca, coords_c = conf_coords
