@@ -238,8 +238,8 @@ def convert_coords_to_polar(coords_n, coords_ca, coords_c):
     # normal_angle = torch.acos(F.cosine_similarity(cross_vector, peptide_diff_backward.view(-1, 3, 3), dim=2)).view(-1, 3, 1) # n_i
 
     # peptide_pos_features = torch.cat((r_norm, mid_angle, normal_angle), dim=2).view(-1, 9) # s_i
-    temp_coords = all_coords.view(-1, 3, 3)
-    input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), coords_n.size(0))).view(-1, 9)
+    temp_coords = coords_ca.view(-1, 1, 3)
+    input_ab_coords = torch.from_numpy(np.linspace(temp_coords[0].numpy(), temp_coords[-1].numpy(), coords_n.size(0))).view(-1, 3)
 
     return all_coords, input_ab_coords
 
