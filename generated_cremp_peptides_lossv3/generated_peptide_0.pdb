@@ -1,0 +1,26 @@
+TITLE     MDANALYSIS FRAMES FROM 0, STEP 1: Created by PDBWriter
+CRYST1    1.000    1.000    1.000  90.00  90.00  90.00 P 1           1
+REMARK     285 UNITARY VALUES FOR THE UNIT CELL AUTOMATICALLY SET
+REMARK     285 BY MDANALYSIS PDBWRITER BECAUSE UNIT CELL INFORMATION
+REMARK     285 WAS MISSING.
+REMARK     285 PROTEIN DATA BANK CONVENTIONS REQUIRE THAT
+REMARK     285 CRYST1 RECORD IS INCLUDED, BUT THE VALUES ON
+REMARK     285 THIS RECORD ARE MEANINGLESS.
+MODEL        1
+ATOM      1  N   A   X   1       0.021   0.101   0.448  1.00  0.00              
+ATOM      2  CA  A   X   1       0.000   0.015   0.687  1.00  0.00              
+ATOM      3  C   A   X   1      -0.003   0.020   0.647  1.00  0.00              
+ATOM      4  N   I   X   1      -0.006   0.082   0.882  1.00  0.00              
+ATOM      5  CA  I   X   1      -0.144   0.504   1.148  1.00  0.00              
+ATOM      6  C   I   X   1       0.045  -0.128   1.112  1.00  0.00              
+ATOM      7  N   V   X   1      -0.002   0.082   0.748  1.00  0.00              
+ATOM      8  CA  V   X   1      -0.095   0.400   0.986  1.00  0.00              
+ATOM      9  C   V   X   1       0.047  -0.139   0.943  1.00  0.00              
+ATOM     10  N   P   X   1      -0.016   0.067   1.487  1.00  0.00              
+ATOM     11  CA  P   X   1      -0.422   0.969   1.605  1.00  0.00              
+ATOM     12  C   P   X   1       0.065  -0.147   1.519  1.00  0.00              
+ENDMDL
+CONECT    4    5    7
+CONECT    5    4
+CONECT    7    4
+END

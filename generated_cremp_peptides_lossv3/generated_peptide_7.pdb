@@ -1,0 +1,32 @@
+TITLE     MDANALYSIS FRAMES FROM 0, STEP 1: Created by PDBWriter
+CRYST1    1.000    1.000    1.000  90.00  90.00  90.00 P 1           1
+REMARK     285 UNITARY VALUES FOR THE UNIT CELL AUTOMATICALLY SET
+REMARK     285 BY MDANALYSIS PDBWRITER BECAUSE UNIT CELL INFORMATION
+REMARK     285 WAS MISSING.
+REMARK     285 PROTEIN DATA BANK CONVENTIONS REQUIRE THAT
+REMARK     285 CRYST1 RECORD IS INCLUDED, BUT THE VALUES ON
+REMARK     285 THIS RECORD ARE MEANINGLESS.
+MODEL        1
+ATOM      1  N   V   X   1       0.013   0.047   0.227  1.00  0.00              
+ATOM      2  CA  V   X   1       0.001   0.041   0.396  1.00  0.00              
+ATOM      3  C   V   X   1       0.001  -0.004   0.381  1.00  0.00              
+ATOM      4  N   V   X   1       0.020   0.096   0.390  1.00  0.00              
+ATOM      5  CA  V   X   1       0.003   0.056   0.593  1.00  0.00              
+ATOM      6  C   V   X   1      -0.005   0.065   0.527  1.00  0.00              
+ATOM      7  N   P   X   1       0.002   0.048   0.425  1.00  0.00              
+ATOM      8  CA  P   X   1      -0.031   0.150   0.532  1.00  0.00              
+ATOM      9  C   P   X   1       0.009  -0.033   0.425  1.00  0.00              
+ATOM     10  N   V   X   1       0.004   0.031   0.260  1.00  0.00              
+ATOM     11  CA  V   X   1      -0.018   0.116   0.409  1.00  0.00              
+ATOM     12  C   V   X   1       0.013  -0.044   0.408  1.00  0.00              
+ATOM     13  N   V   X   1       0.033   0.117   0.485  1.00  0.00              
+ATOM     14  CA  V   X   1       0.008   0.084   0.626  1.00  0.00              
+ATOM     15  C   V   X   1      -0.006   0.066   0.495  1.00  0.00              
+ATOM     16  N   V   X   1       0.021   0.111   0.410  1.00  0.00              
+ATOM     17  CA  V   X   1       0.005   0.076   0.650  1.00  0.00              
+ATOM     18  C   V   X   1      -0.004   0.070   0.586  1.00  0.00              
+ENDMDL
+CONECT    6    7   11
+CONECT    7    6
+CONECT   11    6
+END
