@@ -62,6 +62,7 @@ def get_cremp_data(CREMP_PATH):
 
 if __name__ == "__main__":
     CREMP_PATH = "/data/rishabh/pickle/"
+    print (CREMP_PATH)
     final_data, size_dist = get_cremp_data(CREMP_PATH)
     print (len(final_data))
     pprint (final_data[:10])
