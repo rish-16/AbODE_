@@ -19,6 +19,26 @@ from rmsd import *
 from scipy.stats import vonmises
 from scipy.special import softmax
 
+def sinusoidal_embedding(timesteps, embedding_dim, max_positions=10000):
+    """ from https://github.com/hojonathanho/diffusion/blob/master/diffusion_tf/nn.py   """
+    assert len(timesteps.shape) == 1
+    
+    half_dim = embedding_dim // 2
+    emb = math.log(max_positions) / (half_dim - 1)
+    emb = torch.exp(torch.arange(half_dim, dtype=torch.float32, device=timesteps.device) * -emb)
+    emb = timesteps.float()[:, None] * emb[None, :]
+    emb = torch.cat([torch.sin(emb), torch.cos(emb)], dim=1)
+    
+    if embedding_dim % 2 == 1:  # zero pad
+        emb = F.pad(emb, (0, 1), mode='constant')
+    
+    assert emb.shape == (timesteps.shape[0], embedding_dim)
+    
+    return emb
+
+def cyclic_positional_encoding(batch_x, d=16):
+    return sinusoidal_embedding(batch_x, embedding_dim=d)
+
 def loss_function_polar(y_pred, y_true):
     pred_labels = y_pred[:,:55].view(-1, 55)
     truth_labels = y_true[:,:55].view(-1, 55)
@@ -120,7 +140,7 @@ def loss_function_vm_with_side_chains_v3(y_pred,y_true):
     
     return total_loss       
 
-def loss_ca_only(y_pred, y_truth):
+def loss_ca_only(y_pred, y_true):
     kappa = 10
     pred_labels = y_pred[:,:55].view(-1,55)
     truth_labels = y_true[:,:55].view(-1,55)
@@ -467,7 +487,7 @@ def evaluate_model_coordsonly(model, loader, device, odeint, time):
 
     return metrics    
 
-def evaluate_model_ca_only(model, loader, device, odeint, time):
+def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
     model.eval()
     
     perplexity = []
@@ -482,7 +502,8 @@ def evaluate_model_ca_only(model, loader, device, odeint, time):
         batch = batch.to(device)
         params = [batch.edge_index, batch.a_index]
         model.update_param(params)
-        x = batch.x
+        pos_emb = cyclic_positional_encoding(batch.a_index, d=pos_emb_dim)
+        x = torch.cat([batch.x, pos_emb], dim=1)
 
         options = {
             'dtype': torch.float64,
@@ -613,5 +634,14 @@ def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/", pe
     print (f"Saved molecule")
 
 if __name__ == "__main__":
-    peptide_data = get_graph_data_pyg(process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
-    pprint (peptide_data[:5])
+    x1 = torch.rand(15, 27)
+    x2 = torch.rand(10, 27)
+    x = torch.cat([x1, x2], dim=0)
+
+    aa1 = torch.arange(0, 15)
+    aa2 = torch.arange(0, 10)
+    aa = torch.cat([aa1, aa2], dim=0)
+
+    emb = cyclic_positional_encoding(aa, d=16)
+    print (emb)
+    print (emb.shape)

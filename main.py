@@ -30,7 +30,8 @@ test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 SOLVERS = ["dopri8","dopri5", "bdf", "rk4", "midpoint", 'adams', 'explicit_adams', 'fixed_adams',"scipy_solver","adaptive_heun"]
 
-model = PeptODE_uncond(c_in=58, n_layers=4)
+pos_emb_dim = 16
+model = PeptODE_uncond(c_in=58+pos_emb_dim, n_layers=4)
 model = model.to(device) # 37 features (28 for amino acids, 9 for spatial features)
 optim = torch.optim.Adam(model.parameters())
 
@@ -62,7 +63,8 @@ for epoch in range(EPOCHS):
 
         # The ODE-function to solve the ODE-system
         # print ("ODE")
-        batch_data.x = torch.cat([torch.rand_like(batch_data.x[:, :55]), batch_data.x[:, 55:]], dim=1)
+        pos_emb = peptide_utils.cyclic_positional_encoding(batch_data.a_index, d=pos_emb_dim)
+        batch_data.x = torch.cat([torch.rand_like(batch_data.x[:, :55]), batch_data.x[:, 55:], pos_emb], dim=1)
         batch_data.x = batch_data.x.to(device)
         y_pd = odeint(
             model, batch_data.x, t, 
@@ -80,10 +82,10 @@ for epoch in range(EPOCHS):
 
     print (f"epoch: {epoch} | train loss: {epoch_loss:.5f}")
     if epoch % 20 == 0:
-        eval_metrics = peptide_utils.evaluate_model_ca_only(model, test_loader, device, odeint, time=t)
+        eval_metrics = peptide_utils.evaluate_model_ca_only(model, test_loader, device, odeint, time=t, pos_emb_dim=pos_emb_dim)
         pprint (eval_metrics, indent=2)
 
-        torch.save(model, f"peptode_cremp_ckpt_lossv3/peptode_cremp_model_epoch_{epoch}.pt")
-        torch.save(eval_metrics, f"peptode_cremp_ckpt_lossv3/peptode_cremp_metrics_epoch_{epoch}.pt")
+        torch.save(model, f"peptode_cremp_ckpt_caonly/peptode_cremp_model_epoch_{epoch}.pt")
+        torch.save(eval_metrics, f"peptode_cremp_ckpt_caonly/peptode_cremp_metrics_epoch_{epoch}.pt")
 
-torch.save(model, f"peptode_cremp_ckpt_lossv3/peptode_cremp_model_epoch_final.pt")
+torch.save(model, f"peptode_cremp_ckpt_caonly/peptode_cremp_model_epoch_final.pt")
