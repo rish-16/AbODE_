@@ -43,11 +43,11 @@ model = torch.load("peptode_cremp_ckpt_lossv3/peptode_cremp_model_epoch_40.pt").
 
 t_begin = 0
 t_end = 1
-t_nsamples = 200
+t_nsamples = 100
 t_space = np.linspace(t_begin, t_end, t_nsamples)
 t = torch.tensor(t_space).to(device)
 
-def generate(model, N_peptides, N_residues):
+def generate(model, N_peptides, N_residues, pos_emb_dim):
     batch = []
     for n in range(N_peptides):
         
@@ -76,10 +76,12 @@ def generate(model, N_peptides, N_residues):
 
     for ii, data in enumerate(batch): # generate 1 molecule at a time (TODO: batching is buggy)
         batch_data = Batch.from_data_list([data])
-        batch_data = batch_data.to(device)
         params = [batch_data.edge_index, batch_data.a_index]
         model.update_param(params)
-        x = batch_data.x
+        pos_emb = peptide_utils.cyclic_positional_encoding(batch.a_index.view(-1), d=pos_emb_dim)
+        x = torch.cat([batch.x, pos_emb], dim=1)
+        batch_data.x = x
+        batch_data = batch_data.to(device)
 
         options = {
             'dtype': torch.float64,
@@ -88,8 +90,8 @@ def generate(model, N_peptides, N_residues):
         }
         
         y_pd = odeint(
-            model, x, t, 
-            method="adaptive_heun", 
+            model, batch_data.x, t, 
+            method="rk4", 
             rtol=5e-1, atol=5e-1,
             options=options
         )
@@ -97,11 +99,13 @@ def generate(model, N_peptides, N_residues):
         y_pd = y_pd[-1].cpu().detach() # get final timestep z(T)
         amino_acids_ids = torch.softmax(y_pd[:, :55], 1)
         amino_acids_ids = amino_acids_ids.argmax(dim=1)
-        polar_coords = y_pd[:, 55:64]
+        polar_coords = y_pd[:, 55:58]
 
-        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii, save_dir="generated_cremp_peptides_lossv3/")
+        peptide_utils.convert_to_mda_writer(amino_acids_ids, polar_coords, pep_idx=ii, save_dir="generated_cremp_peptides_ca_only/")
 
 size_dist = np.load("cremp_size_dist.npy")
-sampled_sizes = np.random.choice(a=size_dist, size=(10,))
+N_peptides = 10
+sampled_sizes = np.random.choice(a=size_dist, size=(N_peptides,))
 sampled_sizes = sampled_sizes.reshape(-1).tolist()
-generate(model, 10, sampled_sizes)
+generate(model, N_peptides, sampled_sizes, pos_emb_dim=16)
+

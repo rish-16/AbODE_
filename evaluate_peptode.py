@@ -33,7 +33,7 @@ model = torch.load("peptode_ckpt/peptode_model_epoch_final.pt")
 
 t_begin = 0
 t_end = 1
-t_nsamples = 200
+t_nsamples = 100
 t_space = np.linspace(t_begin, t_end, t_nsamples)
 t = torch.tensor(t_space).to(device)
 
