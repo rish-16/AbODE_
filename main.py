@@ -63,7 +63,7 @@ for epoch in range(EPOCHS):
 
         # The ODE-function to solve the ODE-system
         # print ("ODE")
-        pos_emb = peptide_utils.cyclic_positional_encoding(batch_data.a_index, d=pos_emb_dim)
+        pos_emb = peptide_utils.cyclic_positional_encoding(batch_data.a_index.view(-1), d=pos_emb_dim)
         batch_data.x = torch.cat([torch.rand_like(batch_data.x[:, :55]), batch_data.x[:, 55:], pos_emb], dim=1)
         batch_data.x = batch_data.x.to(device)
         y_pd = odeint(

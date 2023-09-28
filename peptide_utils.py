@@ -502,7 +502,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         batch = batch.to(device)
         params = [batch.edge_index, batch.a_index]
         model.update_param(params)
-        pos_emb = cyclic_positional_encoding(batch.a_index, d=pos_emb_dim)
+        pos_emb = cyclic_positional_encoding(batch.a_index.view(-1), d=pos_emb_dim)
         x = torch.cat([batch.x, pos_emb], dim=1)
 
         options = {
