@@ -30,7 +30,7 @@ test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 SOLVERS = ["dopri8","dopri5", "bdf", "rk4", "midpoint", 'adams', 'explicit_adams', 'fixed_adams',"scipy_solver","adaptive_heun"]
 
-model = PeptODE_uncond(c_in=64, n_layers=4)
+model = PeptODE_uncond(c_in=58, n_layers=4)
 model = model.to(device) # 37 features (28 for amino acids, 9 for spatial features)
 optim = torch.optim.Adam(model.parameters())
 
