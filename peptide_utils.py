@@ -100,7 +100,7 @@ def loss_function_vm_with_side_chains_v3(y_pred,y_true):
     x0_loss = nn.MSELoss(reduction="mean")
     x0_loss_val = x0_loss(pred_x0,true_x0)
     x1_loss = nn.MSELoss(reduction="mean")
-    x1_loss_val = x1_loss(pred_x2,true_x1)
+    x1_loss_val = x1_loss(pred_x1,true_x1)
     x2_loss = nn.MSELoss(reduction="mean")
     x2_loss_val = x2_loss(pred_x2,true_x2)
     
@@ -119,7 +119,24 @@ def loss_function_vm_with_side_chains_v3(y_pred,y_true):
     # total_loss = loss_ce + r_loss_val + total_angle_loss
     
     return total_loss       
+
+def loss_ca_only(y_pred, y_truth):
+    kappa = 10
+    pred_labels = y_pred[:,:55].view(-1,55)
+    truth_labels = y_true[:,:55].view(-1,55)
     
+    celoss = nn.CrossEntropyLoss()
+    loss_ce = celoss(pred_labels,truth_labels)
+    
+    pred_coords = y_pred[:,55:58].view(-1,3)
+    true_coords = y_true[:,55:58].view(-1,3)
+
+    ca_loss = nn.MSELoss(reduction="mean")
+    ca_loss_val = ca_loss(pred_coords, true_coords)
+    
+    total_loss = loss_ce + ca_loss_val
+    
+    return total_loss
 
 def process_data_mda(path):
     directory = os.listdir(path)
@@ -449,6 +466,88 @@ def evaluate_model_coordsonly(model, loader, device, odeint, time):
     }
 
     return metrics    
+
+def evaluate_model_ca_only(model, loader, device, odeint, time):
+    model.eval()
+    
+    perplexity = []
+    calpha_rmsd = []
+    rmsd_pred = []
+    RMSD_test_n = []
+    RMSD_test_ca = []
+    RMSD_test_ca_cart = []
+    RMSD_test_c = []    
+
+    for i, batch in enumerate(loader):
+        batch = batch.to(device)
+        params = [batch.edge_index, batch.a_index]
+        model.update_param(params)
+        x = batch.x
+
+        options = {
+            'dtype': torch.float64,
+            # 'first_step': 1.0e-9,
+            # 'grid_points': t,
+        }
+        
+        y_pd = odeint(
+            model, x, time, 
+            method="adaptive_heun", 
+            rtol=5e-1, atol=5e-1,
+            options=options
+        )
+
+        y_pd = y_pd[-1] # get final timestep z(T)
+        y_truth = batch.y
+        
+        pred_labels = y_pd[:, :55].view(-1, 55)
+        truth_labels = y_truth[:, :55].view(-1, 55)
+
+        celoss = nn.CrossEntropyLoss()
+        loss_ce = celoss(pred_labels, truth_labels)
+        ppl = torch.exp(loss_ce)
+
+        first_residue = batch.first_res
+
+        pred_coord = y_pd[:,55:58].cpu().detach().numpy().reshape(-1, 3)
+        truth_coord = y_truth[:,55:58].cpu().detach().numpy().reshape(-1, 3)
+        first_residue_coord = first_residue[:, 0].cpu().detach().numpy().reshape(-1, 3)
+
+        # rmsd_N = kabsch_rmsd(pred_coord[:][:,0][:], truth_coord[:][:,0][:])
+        rmsd_Ca = kabsch_rmsd(pred_coord, truth_coord)
+        # rmsd_C = kabsch_rmsd(pred_coord[:][:,2][:], truth_coord[:][:,2][:])
+
+        # Cart_pred,Cart_truth = _get_cartesian(torch.tensor(pred_polar_coord).view(-1, 9), torch.tensor(truth_polar_coord).view(-1, 9))
+        # Cart_pred[0] = Cart_truth[0]
+        # Cart_pred[-1] = Cart_truth[-1]
+        
+        # C_alpha_pred = Cart_pred[:,3:6].numpy()
+        # C_alpha_truth = Cart_truth[:,3:6].numpy()
+        
+        # for entry in range(len(C_alpha_pred)):
+        #     if entry == 0: 
+        #         C_alpha_pred[entry] = C_alpha_pred[entry] + first_residue_coord
+        #         C_alpha_truth[entry] = C_alpha_truth[entry] + first_residue_coord
+        #     else:
+        #         C_alpha_pred[entry] = C_alpha_pred[entry] + C_alpha_pred[entry-1]
+        #         C_alpha_truth[entry] = C_alpha_truth[entry] + C_alpha_truth[entry-1]
+
+        # Calculating the Kabsch RMSD with reconstructed features
+        # rmsd_cart_Ca = kabsch_rmsd(C_alpha_pred,C_alpha_truth)
+
+        perplexity.append(ppl.item())
+        rmsd_pred.append(rmsd_Ca)
+        RMSD_test_ca.append(rmsd_Ca)
+
+    metrics = {
+        'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
+        'std_perplexity': np.array(perplexity).reshape(-1, 1).std(axis=0)[0],
+        'mean_rmsd': np.array(rmsd_pred).reshape(-1, 1).mean(axis=0)[0],
+        'std_rmsd': np.array(rmsd_pred).reshape(-1, 1).std(axis=0)[0],
+        'mean_rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0],
+    }
+
+    return metrics        
 
 def decode_polar_coords(bb_combined):
     # (N_res, (r,a,g)_n + (r,a,g)_ca + (r,a,g)_c)
