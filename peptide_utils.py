@@ -581,17 +581,17 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         rmsd_pred.append(rmsd_Ca)
         RMSD_test_ca.append(rmsd_Ca)
 
-        carbon_mass = 12
-        ca_coords = pred_coord.numpy()
-        ca_com = ca_coords.mean()
-        
+        # carbon_mass = 12
+        # ca_coords = pred_coord
+        # ca_com = ca_coords.mean()
+        # rog = radgyr(pred_coord)
 
     metrics = {
         'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
         'std_perplexity': np.array(perplexity).reshape(-1, 1).std(axis=0)[0],
         'mean_rmsd': np.array(rmsd_pred).reshape(-1, 1).mean(axis=0)[0],
         'std_rmsd': np.array(rmsd_pred).reshape(-1, 1).std(axis=0)[0],
-        'mean_rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0],
+        'mean_rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0]
     }
 
     return metrics        
