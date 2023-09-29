@@ -37,7 +37,7 @@ optim = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 t_begin = 0
 t_end = 1
-t_nsamples = 150
+t_nsamples = 300
 t_space = np.linspace(t_begin, t_end, t_nsamples)
 t = torch.tensor(t_space).to(device)
 
@@ -69,7 +69,7 @@ for epoch in range(EPOCHS):
         y_pd = odeint(
             model, batch_data.x, t, 
             method="adaptive_heun", 
-            rtol=5e-1, atol=1e-6,
+            rtol=5e-1, atol=5e-1,
             options=options
         )
 

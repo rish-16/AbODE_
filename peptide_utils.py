@@ -536,7 +536,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         y_pd = odeint(
             model, x, time, 
             method="adaptive_heun", 
-            rtol=5e-1, atol=1e-6,
+            rtol=5e-1, atol=5e-1,
             options=options
         )
 
