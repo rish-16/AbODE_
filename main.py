@@ -33,7 +33,7 @@ SOLVERS = ["dopri8","dopri5", "bdf", "rk4", "midpoint", 'adams', 'explicit_adams
 pos_emb_dim = 16
 model = PeptODE_uncond(c_in=58+pos_emb_dim, n_layers=4)
 model = model.to(device) # 37 features (28 for amino acids, 9 for spatial features)
-optim = torch.optim.Adam(model.parameters())
+optim = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 t_begin = 0
 t_end = 1
@@ -68,7 +68,7 @@ for epoch in range(EPOCHS):
         batch_data.x = batch_data.x.to(device)
         y_pd = odeint(
             model, batch_data.x, t, 
-            method="adaptive_heun", 
+            method="dopri8", 
             rtol=5e-1, atol=5e-1,
             options=options
         )
@@ -85,7 +85,7 @@ for epoch in range(EPOCHS):
         eval_metrics = peptide_utils.evaluate_model_ca_only(model, test_loader, device, odeint, time=t, pos_emb_dim=pos_emb_dim)
         pprint (eval_metrics, indent=2)
 
-        torch.save(model, f"peptode_cremp_ckpt_caonly/peptode_cremp_model_epoch_{epoch}.pt")
-        torch.save(eval_metrics, f"peptode_cremp_ckpt_caonly/peptode_cremp_metrics_epoch_{epoch}.pt")
+        torch.save(model, f"peptode_cremp_ckpt_caonly_dopri8/peptode_cremp_model_epoch_{epoch}.pt")
+        torch.save(eval_metrics, f"peptode_cremp_ckpt_caonly_dopri8/peptode_cremp_metrics_epoch_{epoch}.pt")
 
-torch.save(model, f"peptode_cremp_ckpt_caonly/peptode_cremp_model_epoch_final.pt")
+torch.save(model, f"peptode_cremp_ckpt_caonly_dopri8/peptode_cremp_model_epoch_final.pt")
