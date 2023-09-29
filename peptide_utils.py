@@ -525,7 +525,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         model.update_param(params)
         pos_emb = cyclic_positional_encoding(batch.a_index.view(-1), d=pos_emb_dim)
         # x = torch.cat([batch.x, pos_emb], dim=1)
-        x = torch.cat([1/55 * torch.ones(batch_data.y.size(0), 55).to(device), batch_data.x[:, 55:], pos_emb], dim=1)
+        x = torch.cat([1/55 * torch.ones(batch.y.size(0), 55).to(device), batch.x[:, 55:], pos_emb], dim=1)
 
         options = {
             'dtype': torch.float64,
@@ -536,7 +536,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         y_pd = odeint(
             model, x, time, 
             method="adaptive_heun", 
-            rtol=5e-1, atol=5e-1,
+            rtol=5e-1, atol=1e-6,
             options=options
         )
 
