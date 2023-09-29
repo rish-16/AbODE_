@@ -147,11 +147,11 @@ class PeptODE_uncond(nn.Module):
 
     def forward(self, t, data):
         
-        Node_label, Node_coord  = data[:,:28], data[:,28:37]
+        Node_label, Node_coord  = data[:,:55], data[:,55:58]
         
         Edge_index = self.edge_index.long()
         
-        r_ij,r_ij_vector = self._get_pairwise(Node_coord.view(-1,3,3),Edge_index_ag)
+        # r_ij,r_ij_vector = self._get_pairwise(Node_coord.view(-1,3,3),Edge_index_ag)
         
         # rbf_weight = self._rbf_weight(r_ij.to(data.device)).float().view(-1,3)
         
