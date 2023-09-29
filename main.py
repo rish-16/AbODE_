@@ -33,7 +33,7 @@ SOLVERS = ["dopri8","dopri5", "bdf", "rk4", "midpoint", 'adams', 'explicit_adams
 pos_emb_dim = 16
 model = PeptODE_uncond(c_in=58+pos_emb_dim, n_layers=4)
 model = model.to(device) # 37 features (28 for amino acids, 9 for spatial features)
-optim = torch.optim.Adam(model.parameters(), lr=1e-4)
+optim = torch.optim.Adam(model.parameters())
 
 t_begin = 0
 t_end = 1
