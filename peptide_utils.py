@@ -336,7 +336,7 @@ def evaluate_model(model, loader, device, odeint, time):
         
         y_pd = odeint(
             model, x, time, 
-            method="dopri8", 
+            method="adaptive_heun", 
             rtol=5e-1, atol=5e-1,
             options=options
         )
@@ -424,7 +424,7 @@ def evaluate_model_coordsonly(model, loader, device, odeint, time):
         
         y_pd = odeint(
             model, x, time, 
-            method="dopri8", 
+            method="adaptive_heun", 
             rtol=5e-1, atol=5e-1,
             options=options
         )
@@ -534,7 +534,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         
         y_pd = odeint(
             model, x, time, 
-            method="dopri8", 
+            method="adaptive_heun", 
             rtol=5e-1, atol=5e-1,
             options=options
         )

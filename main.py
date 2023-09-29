@@ -24,7 +24,7 @@ print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
 peptide_data_train, peptide_data_test = cremp_data[:train_size], cremp_data[train_size:][:70] # test size of 50 peptides
-train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=300)
+train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=64)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -37,7 +37,7 @@ optim = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 t_begin = 0
 t_end = 1
-t_nsamples = 100
+t_nsamples = 150
 t_space = np.linspace(t_begin, t_end, t_nsamples)
 t = torch.tensor(t_space).to(device)
 
@@ -68,7 +68,7 @@ for epoch in range(EPOCHS):
         batch_data.x = batch_data.x.to(device)
         y_pd = odeint(
             model, batch_data.x, t, 
-            method="dopri8", 
+            method="adaptive_heun", 
             rtol=5e-1, atol=5e-1,
             options=options
         )
@@ -85,7 +85,7 @@ for epoch in range(EPOCHS):
         eval_metrics = peptide_utils.evaluate_model_ca_only(model, test_loader, device, odeint, time=t, pos_emb_dim=pos_emb_dim)
         pprint (eval_metrics, indent=2)
 
-        torch.save(model, f"peptode_cremp_ckpt_caonly_dopri8/peptode_cremp_model_epoch_{epoch}.pt")
-        torch.save(eval_metrics, f"peptode_cremp_ckpt_caonly_dopri8/peptode_cremp_metrics_epoch_{epoch}.pt")
+        torch.save(model, f"peptode_cremp_ckpt_caonly/peptode_cremp_model_epoch_{epoch}.pt")
+        torch.save(eval_metrics, f"peptode_cremp_ckpt_caonly/peptode_cremp_metrics_epoch_{epoch}.pt")
 
-torch.save(model, f"peptode_cremp_ckpt_caonly_dopri8/peptode_cremp_model_epoch_final.pt")
+torch.save(model, f"peptode_cremp_ckpt_caonly/peptode_cremp_model_epoch_final.pt")
