@@ -15,12 +15,12 @@ class PeptODE_uncond(nn.Module):
         super().__init__()
         layers_mlp = []
         activation_fns = []
-        layers_mlp.append(tg.nn.TransformerConv(c_in+1, 128, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(128, 512, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(512, 512, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(512, 512, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(512, 64, heads=1))
-        layers_mlp.append(tg.nn.TransformerConv(64, c_in, heads=1))
+        layers_mlp.append(tg.nn.TransformerConv(c_in+1, 128, heads=1, edge_dim=1))
+        layers_mlp.append(tg.nn.TransformerConv(128, 512, heads=1, edge_dim=1))
+        layers_mlp.append(tg.nn.TransformerConv(512, 512, heads=1, edge_dim=1))
+        layers_mlp.append(tg.nn.TransformerConv(512, 512, heads=1, edge_dim=1))
+        layers_mlp.append(tg.nn.TransformerConv(512, 64, heads=1, edge_dim=1))
+        layers_mlp.append(tg.nn.TransformerConv(64, c_in, heads=1, edge_dim=1))
 
         # layers_mlp.append(gvpgnn.EGNNLayer(c_in+1))
         # layers_mlp.append(gvpgnn.EGNNLayer(128))
@@ -151,7 +151,7 @@ class PeptODE_uncond(nn.Module):
         
         Edge_index = self.edge_index.long()
         
-        # r_ij,r_ij_vector = self._get_pairwise(Node_coord.view(-1,3,3),Edge_index_ag)
+        r_ij,r_ij_vector = self._get_pairwise(Node_coord.view(-1,3,3),Edge_index_ag)
         
         # rbf_weight = self._rbf_weight(r_ij.to(data.device)).float().view(-1,3)
         
@@ -166,6 +166,9 @@ class PeptODE_uncond(nn.Module):
         # oriented_vector = self._get_orientation_vector(Orientations_node,r_ij_vector.view(-1,9),Edge_index_ag)
         
         # final_edge_feature = torch.cat([spatial_diff,node_label_ag,rbf_weight,r_ij_vector,orient_features,oriented_vector],dim=1).float()
+
+        Node_coord = Node_coord.view(-1, 3)
+        r_ij = torch.norm(Node_coord[Edge_index[0]] - Node_coord[Edge_index[1]], dim=1).view(-1, 1) # [E, 1]
         
         dx = data.float()
         # h = dx.float()
@@ -173,9 +176,9 @@ class PeptODE_uncond(nn.Module):
         dx_final = torch.cat([tt.float(), dx], 1)
         
         for l,layer in enumerate(self.layer_mlp):
-            dx_final = layer(dx_final, edge_index=Edge_index)
+            dx_final = layer(dx_final, edge_index=Edge_index, edge_attr=r_ij)
             
             if l != len(self.layer_mlp)-1: 
                 dx_final = torch.relu(dx_final)
 
-        return dx_final.float()        
+        return dx_final.float()

@@ -487,6 +487,27 @@ def evaluate_model_coordsonly(model, loader, device, odeint, time):
 
     return metrics    
 
+def radgyr(coordinates, center_of_mass, masses, total_mass=None):
+    # coordinates change for each frame
+    # coordinates = atomgroup.positions
+
+    # get squared distance from center
+    ri_sq = (coordinates - center_of_mass)**2
+    # sum the unweighted positions
+    sq = np.sum(ri_sq, axis=1)
+    sq_x = np.sum(ri_sq[:,[1,2]], axis=1) # sum over y and z
+    sq_y = np.sum(ri_sq[:,[0,2]], axis=1) # sum over x and z
+    sq_z = np.sum(ri_sq[:,[0,1]], axis=1) # sum over x and y
+
+    # make into array
+    sq_rs = np.array([sq, sq_x, sq_y, sq_z])
+
+    # weight positions
+    rog_sq = np.sum(masses * sq_rs, axis=1) / total_mass
+    
+    # square root and return
+    return np.sqrt(rog_sq)    
+
 def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
     model.eval()
     
@@ -559,6 +580,11 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         perplexity.append(ppl.item())
         rmsd_pred.append(rmsd_Ca)
         RMSD_test_ca.append(rmsd_Ca)
+
+        carbon_mass = 12
+        ca_coords = pred_coord.numpy()
+        ca_com = ca_coords.mean()
+        
 
     metrics = {
         'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
