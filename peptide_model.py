@@ -168,7 +168,8 @@ class PeptODE_uncond(nn.Module):
         # final_edge_feature = torch.cat([spatial_diff,node_label_ag,rbf_weight,r_ij_vector,orient_features,oriented_vector],dim=1).float()
 
         Node_coord = Node_coord.view(-1, 3)
-        r_ij = torch.norm(Node_coord[Edge_index[0]] - Node_coord[Edge_index[1]], dim=1).view(-1, 1).double() # [E, 1]
+        r_ij = torch.norm(Node_coord[Edge_index[0]] - Node_coord[Edge_index[1]], dim=1).view(-1, 1).float() # [E, 1]
+        print (r_ij.shape)
         
         dx = data.float()
         # h = dx.float()
