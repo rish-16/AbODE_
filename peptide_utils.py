@@ -663,15 +663,15 @@ def convert_to_mda_writer(res_ids, bb_coords, save_dir="generated_peptides/", pe
 
     print (f"Saved molecule")
 
-if __name__ == "__main__":
-    x1 = torch.rand(15, 27)
-    x2 = torch.rand(10, 27)
-    x = torch.cat([x1, x2], dim=0)
+# if __name__ == "__main__":
+#     x1 = torch.rand(15, 27)
+#     x2 = torch.rand(10, 27)
+#     x = torch.cat([x1, x2], dim=0)
 
-    aa1 = torch.arange(0, 15)
-    aa2 = torch.arange(0, 10)
-    aa = torch.cat([aa1, aa2], dim=0)
+#     aa1 = torch.arange(0, 15)
+#     aa2 = torch.arange(0, 10)
+#     aa = torch.cat([aa1, aa2], dim=0)
 
-    emb = cyclic_positional_encoding(aa, d=16)
-    print (emb)
-    print (emb.shape)
+#     emb = cyclic_positional_encoding(aa, d=16)
+#     print (emb)
+#     print (emb.shape)
