@@ -68,9 +68,10 @@ for epoch in range(EPOCHS):
         batch_data.x = batch_data.x.to(device)
         y_pd = odeint(
             model, batch_data.x, t, 
-            method="adaptive_heun", 
-            rtol=5e-1, atol=5e-1,
-            options=options
+            method="dopri8", 
+            rtol=1e-5, atol=1e-5,
+            options=options,
+            use_adjoint=True
         )
 
         y_pd = y_pd[-1, :, :].reshape(-1, y_pd.size(-1)) # get last timestep z(T)

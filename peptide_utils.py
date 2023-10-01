@@ -336,9 +336,10 @@ def evaluate_model(model, loader, device, odeint, time):
         
         y_pd = odeint(
             model, x, time, 
-            method="adaptive_heun", 
-            rtol=5e-1, atol=5e-1,
-            options=options
+            method="dopri8", 
+            rtol=1e-5, atol=1e-5,
+            options=options,
+            use_adjoint=True
         )
 
         y_pd = y_pd[-1] # get final timestep z(T)
@@ -424,9 +425,10 @@ def evaluate_model_coordsonly(model, loader, device, odeint, time):
         
         y_pd = odeint(
             model, x, time, 
-            method="adaptive_heun", 
-            rtol=5e-1, atol=5e-1,
-            options=options
+            method="dopri8", 
+            rtol=1e-5, atol=1e-5,
+            options=options,
+            use_adjoint=True
         )
 
         y_pd = y_pd[-1] # get final timestep z(T)
@@ -535,9 +537,10 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         
         y_pd = odeint(
             model, x, time, 
-            method="adaptive_heun", 
-            rtol=5e-1, atol=5e-1,
-            options=options
+            method="dopri8", 
+            rtol=1e-5, atol=1e-5,
+            options=options,
+            use_adjoint=True
         )
 
         y_pd = y_pd[-1] # get final timestep z(T)
