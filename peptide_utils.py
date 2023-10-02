@@ -527,7 +527,8 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         model.update_param(params)
         pos_emb = cyclic_positional_encoding(batch.a_index.view(-1), d=pos_emb_dim)
         # x = torch.cat([batch.x, pos_emb], dim=1)
-        x = torch.cat([1/55 * torch.ones(batch.y.size(0), 55).to(device), batch.x[:, 55:], pos_emb], dim=1)
+        # x = torch.cat([1/55 * torch.ones(batch.y.size(0), 55).to(device), batch.x[:, 55:], pos_emb], dim=1)
+        x = torch.cat([batch.x[:, 55:58], pos_emb], dim=1)
 
         options = {
             'dtype': torch.float64,
@@ -546,17 +547,17 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         y_pd = y_pd[-1] # get final timestep z(T)
         y_truth = batch.y
         
-        pred_labels = y_pd[:, :55].view(-1, 55)
-        truth_labels = y_truth[:, :55].view(-1, 55)
+        # pred_labels = y_pd[:, :55].view(-1, 55)
+        # truth_labels = y_truth[:, :55].view(-1, 55)
 
-        celoss = nn.CrossEntropyLoss()
-        loss_ce = celoss(pred_labels, truth_labels)
-        ppl = torch.exp(loss_ce)
+        # celoss = nn.CrossEntropyLoss()
+        # loss_ce = celoss(pred_labels, truth_labels)
+        # ppl = torch.exp(loss_ce)
 
         first_residue = batch.first_res
 
-        pred_coord = y_pd[:,55:58].cpu().detach().numpy().reshape(-1, 3)
-        truth_coord = y_truth[:,55:58].cpu().detach().numpy().reshape(-1, 3)
+        pred_coord = y_pd[:,0:3].cpu().detach().numpy().reshape(-1, 3)
+        truth_coord = y_truth[:,0:3].cpu().detach().numpy().reshape(-1, 3)
         # first_residue_coord = first_residue.cpu().detach().numpy().reshape(-1, 3)
 
         # rmsd_N = kabsch_rmsd(pred_coord[:][:,0][:], truth_coord[:][:,0][:])
@@ -581,7 +582,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         # Calculating the Kabsch RMSD with reconstructed features
         # rmsd_cart_Ca = kabsch_rmsd(C_alpha_pred,C_alpha_truth)
 
-        perplexity.append(ppl.item())
+        # perplexity.append(ppl.item())
         rmsd_pred.append(rmsd_Ca)
         RMSD_test_ca.append(rmsd_Ca)
 
@@ -591,8 +592,8 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         # rog = radgyr(pred_coord)
 
     metrics = {
-        'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
-        'std_perplexity': np.array(perplexity).reshape(-1, 1).std(axis=0)[0],
+        # 'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
+        # 'std_perplexity': np.array(perplexity).reshape(-1, 1).std(axis=0)[0],
         'mean_rmsd': np.array(rmsd_pred).reshape(-1, 1).mean(axis=0)[0],
         'std_rmsd': np.array(rmsd_pred).reshape(-1, 1).std(axis=0)[0],
         'mean_rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0]

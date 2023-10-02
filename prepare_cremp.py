@@ -37,13 +37,15 @@ def get_cremp_data(CREMP_PATH):
                 combined_coords = torch.from_numpy(np.concatenate([coords_n, coords_ca, coords_c], axis=1)) # (N_res, 9)
 
                 _, input_rand_coords = peptide_utils.convert_coords_to_polar(coords_n, coords_ca, coords_c)
-                final_target_features_only_coords = torch.cat([ohe_aa, coords_ca], dim=1)
+                # final_target_features_only_coords = torch.cat([ohe_aa, coords_ca], dim=1)
+                final_target_features_only_coords = torch.cat([coords_ca], dim=1)
 
-                input_peptide_labels = float(1/NUM_UNIQUE_AAs) * torch.ones(len(residues_in_mol), NUM_UNIQUE_AAs + 1) # uniform array
-                input_peptide_labels = input_peptide_labels.view(-1, NUM_UNIQUE_AAs + 1)
+                # input_peptide_labels = float(1/NUM_UNIQUE_AAs) * torch.ones(len(residues_in_mol), NUM_UNIQUE_AAs + 1) # uniform array
+                # input_peptide_labels = input_peptide_labels.view(-1, NUM_UNIQUE_AAs + 1)
                 amino_index = torch.tensor([i for i in range(len(residues_in_mol))]).view(-1, 1).float()
 
-                final_input_features_only_coords = torch.cat([input_peptide_labels, input_rand_coords], dim=1)
+                # final_input_features_only_coords = torch.cat([input_peptide_labels, input_rand_coords], dim=1)
+                final_input_features_only_coords = torch.cat([input_rand_coords], dim=1)
                 
                 first_coord = coords_ca[0].view(-1, 1, 3)
                 edge_index = radius_graph(torch.from_numpy(coords_ca), r=5, loop=False) # connect residues by C_alpha coordinates
@@ -69,4 +71,4 @@ if __name__ == "__main__":
     final_data, size_dist = get_cremp_data(CREMP_PATH)
     print (len(final_data))
     pprint (final_data[:10])
-    torch.save(final_data, "cremp_pyg_data_small_ca_only.pt")
+    torch.save(final_data, "cremp_only_ca_training.pt")

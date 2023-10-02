@@ -19,25 +19,25 @@ import prepare_cremp
 
 # peptide_data = peptide_utils.get_graph_data_pyg(peptide_utils.process_data_mda("peptide_data/pdb_with_atom_connectivity_water/peptides/"))
 
-cremp_data = torch.load("cremp_data_ca_only.pt")
+cremp_data = torch.load("cremp_only_ca_training.pt")
 print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
 peptide_data_train, peptide_data_test = cremp_data[:train_size], cremp_data[train_size:][:70] # test size of 50 peptides
-train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=512)
+train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=300)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 SOLVERS = ["dopri8","dopri5", "bdf", "rk4", "midpoint", 'adams', 'explicit_adams', 'fixed_adams',"scipy_solver","adaptive_heun"]
 
 pos_emb_dim = 16
-model = PeptODE_uncond(c_in=58+pos_emb_dim, n_layers=4)
+model = PeptODE_uncond(c_in=3+pos_emb_dim, n_layers=4)
 model = model.to(device) # 37 features (28 for amino acids, 9 for spatial features)
 optim = torch.optim.Adam(model.parameters())
 
 t_begin = 0
 t_end = 1
-t_nsamples = 300
+t_nsamples = 200
 t_space = np.linspace(t_begin, t_end, t_nsamples)
 t = torch.tensor(t_space).to(device)
 
@@ -64,7 +64,8 @@ for epoch in range(EPOCHS):
         # The ODE-function to solve the ODE-system
         # print ("ODE")
         pos_emb = peptide_utils.cyclic_positional_encoding(batch_data.a_index.view(-1), d=pos_emb_dim).to(device)
-        batch_data.x = torch.cat([1/55 * torch.ones(batch_data.y.size(0), 55).to(device), batch_data.x[:, 55:], pos_emb], dim=1)
+        # batch_data.x = torch.cat([1/55 * torch.ones(batch_data.y.size(0), 55).to(device), batch_data.x[:, 55:], pos_emb], dim=1)
+        batch_data.x = torch.cat([batch_data.x[:, 0:3], pos_emb], dim=1)
         batch_data.x = batch_data.x.to(device)
         y_pd = odeint(
             model, batch_data.x, t, 
