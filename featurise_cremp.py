@@ -185,7 +185,7 @@ def featurize_macrocycle_atoms_from_file(
     return_mol = False,
 ):
     
-    with open(path, "rb") as f:
+    with open(path, "r+") as f:
         ensemble_data = pkl.load(f)
 
     print (ensemble_data)
