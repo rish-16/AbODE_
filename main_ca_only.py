@@ -24,7 +24,7 @@ print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
 peptide_data_train, peptide_data_test = cremp_data[:70000], cremp_data[train_size:][:70] # test size of 50 peptides
-print (peptide_data_train)
+print (peptide_data_train[0])
 train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=128)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
