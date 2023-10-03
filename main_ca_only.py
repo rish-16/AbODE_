@@ -86,7 +86,6 @@ for epoch in range(EPOCHS):
 
         epoch_loss += loss.cpu().detach().item()
         print (f"Epoch: {epoch} | Step: {idx}")
-        break
 
     print (f"epoch: {epoch} | train loss: {epoch_loss:.5f}")
     if epoch % 20 == 0:
@@ -95,7 +94,5 @@ for epoch in range(EPOCHS):
 
 #         torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_{epoch}.pt")
 #         torch.save(eval_metrics, f"peptode_cremp_ckpt_catraining/peptode_cremp_metrics_epoch_{epoch}.pt")
-
-    break
 
 # torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_final.pt")
