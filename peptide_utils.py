@@ -534,7 +534,7 @@ def radgyr(coordinates, pooled):
     sq_rs = np.array([sq, sq_x, sq_y, sq_z])
 
     # weight positions
-    rog_sq = np.sum(masses * sq_rs, axis=1) / total_mass
+    rog_sq = np.sum(weight_arr * sq_rs, axis=1) / total_mass
     
     # square root and return
     return np.sqrt(rog_sq)    
