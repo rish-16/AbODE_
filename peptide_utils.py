@@ -629,7 +629,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         carbon_ones = torch.ones(x.size(0), 1)
         pooled_carbon_ones = tg.nn.global_add_pool(carbon_ones, batch.batch.cpu().detach())
         pooled_carbon_ones = pooled_carbon_ones.view(-1,1).item()
-        rog = radgyr(pred_coord, pooled_carbon_ones)
+        rog = radgyr(pred_coord, int(pooled_carbon_ones))
         rog_ca.append(rog)
 
     metrics = {
