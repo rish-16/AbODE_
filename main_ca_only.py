@@ -28,7 +28,7 @@ print (peptide_data_train[0])
 train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=64)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
-device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 SOLVERS = ["dopri8","dopri5", "bdf", "rk4", "midpoint", 'adams', 'explicit_adams', 'fixed_adams',"scipy_solver","adaptive_heun"]
 
 pos_emb_dim = 16
