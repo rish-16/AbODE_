@@ -178,6 +178,8 @@ class PeptODE_uncond(nn.Module):
         tt = tt.to(data.device)
         dx_final = torch.cat([tt.float(), dx], 1)
         dx_final = dx_final.to(data.device)
+
+        print (dx_final.device, data.device, Edge_index.device, Node_coord.device, r_ij.device, tt.device)
         
         for l,layer in enumerate(self.layer_mlp):
             dx_final = layer(dx_final, edge_index=Edge_index, edge_attr=r_ij)
