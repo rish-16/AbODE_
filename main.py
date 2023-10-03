@@ -72,7 +72,7 @@ for epoch in range(EPOCHS):
             method="dopri8", 
             rtol=1e-5, atol=1e-5,
             options=options,
-            use_adjoint=True
+            # use_adjoint=True
         )
 
         y_pd = y_pd[-1, :, :].reshape(-1, y_pd.size(-1)) # get last timestep z(T)

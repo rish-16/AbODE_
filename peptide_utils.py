@@ -541,7 +541,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
             method="dopri8", 
             rtol=1e-5, atol=1e-5,
             options=options,
-            use_adjoint=True
+            # use_adjoint=True
         )
 
         y_pd = y_pd[-1] # get final timestep z(T)
