@@ -551,7 +551,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         params = [batch.edge_index, batch.a_index]
         model.update_param(params)
 
-        print (batch.x.device, batch.y.device, batch.edge_index.device, batch.a_index.device, "time", time.device)
+        # print (batch.x.device, batch.y.device, batch.edge_index.device, batch.a_index.device, "time", time.device)
 
         options = {
             'dtype': torch.float64,
@@ -560,14 +560,14 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         }
         
         y_pd = odeint(
-            model, x, time, 
+            model, batch.x, time, 
             method="adaptive_heun", 
             rtol=5e-6, atol=5e-6,
             options=options,
             # use_adjoint=True
         )
 
-        print ("y_pd", y_pd.device)
+        # print ("y_pd", y_pd.device)
 
         y_pd = y_pd[-1] # get final timestep z(T)
         

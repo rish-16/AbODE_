@@ -146,12 +146,11 @@ class PeptODE_uncond(nn.Module):
         
 
     def forward(self, t, data):
-        print ("t", t.device)
-        data = data.to(t.device)
+        # print ("t", t.device)
         # Node_label, Node_coord  = data[:,:55], data[:,55:58]
         Node_coord  = data[:,0:3]
         Edge_index = self.edge_index.long()
-        print (data.device, Edge_index.device)
+        # print (data.device, Edge_index.device)
         
         # r_ij,r_ij_vector = self._get_pairwise(Node_coord.view(-1,3,3),Edge_index_ag)
         
@@ -170,17 +169,17 @@ class PeptODE_uncond(nn.Module):
         # final_edge_feature = torch.cat([spatial_diff,node_label_ag,rbf_weight,r_ij_vector,orient_features,oriented_vector],dim=1).float()
 
         Node_coord = Node_coord.view(-1, 3)
-        r_ij = torch.norm(Node_coord[Edge_index[0]] - Node_coord[Edge_index[1]], dim=1).view(-1, 1).float().to(data.device) # [E, 1])
-        Edge_index = Edge_index.to(data.device)
+        r_ij = torch.norm(Node_coord[Edge_index[0]] - Node_coord[Edge_index[1]], dim=1).view(-1, 1).float() # [E, 1])
+        # Edge_index = Edge_index.to(data.device)
         
         dx = data.float()
         # h = dx.float()
         tt = torch.ones_like(dx[:, :1]) * t
-        tt = tt.to(data.device)
+        # tt = tt.to(data.device)
         dx_final = torch.cat([tt.float(), dx], 1)
-        dx_final = dx_final.to(data.device)
+        # dx_final = dx_final.to(data.device)
 
-        print (dx_final.device, data.device, Edge_index.device, Node_coord.device, r_ij.device, tt.device)
+        # print (dx_final.device, data.device, Edge_index.device, Node_coord.device, r_ij.device, tt.device)
         
         for l,layer in enumerate(self.layer_mlp):
             dx_final = layer(dx_final, edge_index=Edge_index, edge_attr=r_ij)
