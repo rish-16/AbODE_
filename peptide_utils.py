@@ -8,6 +8,7 @@ import MDAnalysis as mda
 from pprint import pprint
 from tqdm import tqdm
 
+import torch_geometric as tg
 from torch_geometric.nn import knn_graph, radius_graph
 from torch_geometric.data import Data, DataLoader
 
@@ -506,10 +507,15 @@ def evaluate_model_coordsonly(model, loader, device, odeint, time):
 
     return metrics    
 
-def radgyr(coordinates, center_of_mass, masses, total_mass=None):
+def radgyr(coordinates, center_of_mass, masses):
     # coordinates change for each frame
     # coordinates = atomgroup.positions
-
+    # https://github.com/MDAnalysis/mdanalysis/blob/427f1a7adf063112ad80aa33441821555f4050ae/package/MDAnalysis/topology/tables.py#L205
+    carbon_mass = 12.01100
+    nitrogen_mass = 14.00700
+    oxygen_mass = 15.99900
+    # total_mass = N_atoms_in_molecule * carbon_mass
+    
     # get squared distance from center
     ri_sq = (coordinates - center_of_mass)**2
     # sum the unweighted positions
@@ -612,8 +618,11 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
 
         # carbon_mass = 12
         # ca_coords = pred_coord
-        # ca_com = ca_coords.mean()
-        # rog = radgyr(pred_coord)
+        ca_com = ca_coords.mean()
+        carbon_ones = torch.ones(x.size(0), 1)
+        pooled_carbon_ones = tg.nn.global_add_pool(carbon_ones, batch.batch.cpu().detach())
+        print (pooled_carbon_ones)
+        # rog = radgyr(pred_coord, center_of_mass, batch.batch.cpu().detach().numpy())
 
     metrics = {
         # 'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
