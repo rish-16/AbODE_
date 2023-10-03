@@ -538,6 +538,8 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
     RMSD_test_ca_cart = []
     RMSD_test_c = []    
 
+    time = time.to(device)
+
     for i, batch in enumerate(loader):
         pos_emb = cyclic_positional_encoding(batch.a_index.view(-1), d=pos_emb_dim)
         # x = torch.cat([batch.x, pos_emb], dim=1)
