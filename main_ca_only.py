@@ -84,6 +84,7 @@ for epoch in range(EPOCHS):
         optim.step()
 
         epoch_loss += loss.cpu().detach().item()
+        print (f"Epoch: {epo} | Step: {idx}")
 
     print (f"epoch: {epoch} | train loss: {epoch_loss:.5f}")
     if epoch % 20 == 0:
