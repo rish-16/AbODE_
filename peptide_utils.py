@@ -567,6 +567,8 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
             # use_adjoint=True
         )
 
+        print ("y_pd", y_pd.device)
+
         y_pd = y_pd[-1] # get final timestep z(T)
         
         # pred_labels = y_pd[:, :55].view(-1, 55)
