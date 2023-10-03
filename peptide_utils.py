@@ -601,6 +601,97 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
 
     return metrics        
 
+def evaluate_model_catraining_only(model, loader, device, odeint, time, pos_emb_dim):
+    model.eval()
+    
+    perplexity = []
+    calpha_rmsd = []
+    rmsd_pred = []
+    RMSD_test_n = []
+    RMSD_test_ca = []
+    RMSD_test_ca_cart = []
+    RMSD_test_c = []    
+
+    for i, batch in enumerate(loader):
+        batch = batch.to(device)
+        params = [batch.edge_index, batch.a_index]
+        model.update_param(params)
+        pos_emb = cyclic_positional_encoding(batch.a_index.view(-1), d=pos_emb_dim)
+        # x = torch.cat([batch.x, pos_emb], dim=1)
+        # x = torch.cat([1/55 * torch.ones(batch.y.size(0), 55).to(device), batch.x[:, 55:], pos_emb], dim=1)
+        x = torch.cat([batch.x[:, 0:3], pos_emb], dim=1)
+
+        options = {
+            'dtype': torch.float64,
+            # 'first_step': 1.0e-9,
+            # 'grid_points': t,
+        }
+        
+        y_pd = odeint(
+            model, x, time, 
+            method="dopri8", 
+            rtol=1e-5, atol=1e-5,
+            options=options,
+            # use_adjoint=True
+        )
+
+        y_pd = y_pd[-1] # get final timestep z(T)
+        y_truth = batch.y
+        
+        # pred_labels = y_pd[:, :55].view(-1, 55)
+        # truth_labels = y_truth[:, :55].view(-1, 55)
+
+        # celoss = nn.CrossEntropyLoss()
+        # loss_ce = celoss(pred_labels, truth_labels)
+        # ppl = torch.exp(loss_ce)
+
+        first_residue = batch.first_res
+
+        pred_coord = y_pd[:,0:3].cpu().detach().numpy().reshape(-1, 3)
+        truth_coord = y_truth[:,0:3].cpu().detach().numpy().reshape(-1, 3)
+        # first_residue_coord = first_residue.cpu().detach().numpy().reshape(-1, 3)
+
+        # rmsd_N = kabsch_rmsd(pred_coord[:][:,0][:], truth_coord[:][:,0][:])
+        rmsd_Ca = kabsch_rmsd(pred_coord, truth_coord)
+        # rmsd_C = kabsch_rmsd(pred_coord[:][:,2][:], truth_coord[:][:,2][:])
+
+        # Cart_pred,Cart_truth = _get_cartesian(torch.tensor(pred_polar_coord).view(-1, 9), torch.tensor(truth_polar_coord).view(-1, 9))
+        # Cart_pred[0] = Cart_truth[0]
+        # Cart_pred[-1] = Cart_truth[-1]
+        
+        # C_alpha_pred = Cart_pred[:,3:6].numpy()
+        # C_alpha_truth = Cart_truth[:,3:6].numpy()
+        
+        # for entry in range(len(C_alpha_pred)):
+        #     if entry == 0: 
+        #         C_alpha_pred[entry] = C_alpha_pred[entry] + first_residue_coord
+        #         C_alpha_truth[entry] = C_alpha_truth[entry] + first_residue_coord
+        #     else:
+        #         C_alpha_pred[entry] = C_alpha_pred[entry] + C_alpha_pred[entry-1]
+        #         C_alpha_truth[entry] = C_alpha_truth[entry] + C_alpha_truth[entry-1]
+
+        # Calculating the Kabsch RMSD with reconstructed features
+        # rmsd_cart_Ca = kabsch_rmsd(C_alpha_pred,C_alpha_truth)
+
+        # perplexity.append(ppl.item())
+        rmsd_pred.append(rmsd_Ca)
+        RMSD_test_ca.append(rmsd_Ca)
+
+        # carbon_mass = 12
+        # ca_coords = pred_coord
+        # ca_com = ca_coords.mean()
+        # rog = radgyr(pred_coord)
+
+    metrics = {
+        # 'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
+        # 'std_perplexity': np.array(perplexity).reshape(-1, 1).std(axis=0)[0],
+        'mean_rmsd': np.array(rmsd_pred).reshape(-1, 1).mean(axis=0)[0],
+        'std_rmsd': np.array(rmsd_pred).reshape(-1, 1).std(axis=0)[0],
+        'mean_rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0]
+    }
+
+    return metrics            
+
 def decode_polar_coords(bb_combined):
     # (N_res, (r,a,g)_n + (r,a,g)_ca + (r,a,g)_c)
     coords_r =  bb_combined[:, [0,3,6]]

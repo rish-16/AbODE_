@@ -147,7 +147,8 @@ class PeptODE_uncond(nn.Module):
 
     def forward(self, t, data):
         
-        Node_label, Node_coord  = data[:,:55], data[:,55:58]
+        # Node_label, Node_coord  = data[:,:55], data[:,55:58]
+        Node_coord  = data[:,0:3]
         
         Edge_index = self.edge_index.long()
         
