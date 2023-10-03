@@ -149,8 +149,8 @@ class PeptODE_uncond(nn.Module):
         
         # Node_label, Node_coord  = data[:,:55], data[:,55:58]
         Node_coord  = data[:,0:3]
-        
         Edge_index = self.edge_index.long()
+        print (data.device, Edge_index.device)
         
         # r_ij,r_ij_vector = self._get_pairwise(Node_coord.view(-1,3,3),Edge_index_ag)
         
