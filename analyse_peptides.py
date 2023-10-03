@@ -1,4 +1,5 @@
 import MDAnalysis as mda
+import torch
 import numpy as np
 import os
 from rdkit.Chem import Descriptors3D
@@ -31,8 +32,6 @@ rog_ca = {
     6: []
 }
 for peptide in peptide_data_train:
-    carbon_ones = torch.ones(x.size(0), 1)
-    pooled_carbon_ones = pooled_carbon_ones.view(-1,1).item()
     coords = peptide.y[:, 55:58]
     N_atoms = int(peptide.x.size(0))
     rog = radgyr(coords, N_atoms)
