@@ -23,9 +23,9 @@ cremp_data = torch.load("cremp_data_ca_only.pt")
 print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
-peptide_data_train, peptide_data_test = cremp_data[:70000], cremp_data[train_size:][:70] # test size of 50 peptides
+peptide_data_train, peptide_data_test = cremp_data[:60000], cremp_data[train_size:][:70] # test size of 50 peptides
 print (peptide_data_train[0])
-train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=100)
+train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=64)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
 device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
