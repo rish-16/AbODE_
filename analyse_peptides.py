@@ -39,10 +39,10 @@ for peptide in peptide_data_train:
     N_atoms = int(peptide.x.size(0))
     rog = radgyr(coords, N_atoms)
 
-    if N_atoms in rog:
-        rog[N_atoms].append(rog)
+    if N_atoms in rog_ca:
+        rog_ca[int(N_atoms)].append(rog)
     else:
-        rog[N_atoms] = [rog]
+        rog_ca[int(N_atoms)] = [rog]
 
 for key, val in rog_ca:
     val = np.array(val).reshape(-1, 1).mean(axis=0)[0]
