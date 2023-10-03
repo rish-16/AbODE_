@@ -543,7 +543,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         pos_emb = cyclic_positional_encoding(batch.a_index.view(-1), d=pos_emb_dim)
         # x = torch.cat([batch.x, pos_emb], dim=1)
         # x = torch.cat([1/55 * torch.ones(batch.y.size(0), 55).to(device), batch.x[:, 55:], pos_emb], dim=1)
-        x = torch.cat([batch.x[:, 55:58], pos_emb], dim=1)
+        x = torch.cat([batch.x[:, 0:3], pos_emb], dim=1)
         batch.x = x
         batch = batch.to(device)
         params = [batch.edge_index, batch.a_index]
@@ -557,7 +557,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         y_pd = odeint(
             model, x, time, 
             method="adaptive_heun", 
-            rtol=1e-5, atol=1e-5,
+            rtol=5e-6, atol=5e-6,
             options=options,
             # use_adjoint=True
         )
@@ -574,8 +574,8 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
 
         first_residue = batch.first_res
 
-        pred_coord = y_pd[:,55:58].cpu().detach().numpy().reshape(-1, 3)
-        truth_coord = y_truth[:,55:58].cpu().detach().numpy().reshape(-1, 3)
+        pred_coord = y_pd[:,0:3].cpu().detach().numpy().reshape(-1, 3)
+        truth_coord = y_truth[:,0:3].cpu().detach().numpy().reshape(-1, 3)
         # first_residue_coord = first_residue.cpu().detach().numpy().reshape(-1, 3)
 
         # rmsd_N = kabsch_rmsd(pred_coord[:][:,0][:], truth_coord[:][:,0][:])

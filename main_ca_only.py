@@ -73,7 +73,7 @@ for epoch in range(EPOCHS):
         y_pd = odeint(
             model, batch_data.x, t, 
             method="adaptive_heun", 
-            rtol=1e-5, atol=1e-5,
+            rtol=5e-6, atol=5e-6,
             options=options,
             # use_adjoint=True
         )
