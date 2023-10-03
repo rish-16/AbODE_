@@ -618,7 +618,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
 
         # carbon_mass = 12
         # ca_coords = pred_coord
-        ca_com = ca_coords.mean()
+        # ca_com = ca_coords.mean()
         carbon_ones = torch.ones(x.size(0), 1)
         pooled_carbon_ones = tg.nn.global_add_pool(carbon_ones, batch.batch.cpu().detach())
         print (pooled_carbon_ones)
