@@ -34,7 +34,8 @@ rog_ca = {
     6: []
 }
 for peptide in peptide_data_train:
-    coords = peptide.y[:, 55:58].view(-1, 3)
+    coords = peptide.y[:, 55:58].view(-1, 3).numpy()
+    print (coords.shape)
     N_atoms = int(peptide.x.size(0))
     rog = radgyr(coords, N_atoms)
 
