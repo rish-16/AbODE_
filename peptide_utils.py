@@ -547,7 +547,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         x = torch.cat([batch.x[:, 0:3], pos_emb], dim=1)
         batch.x = x
         batch = batch.to(device)
-        y_truth = batch.y[:, :55:58]
+        y_truth = batch.y[:, 55:58]
         params = [batch.edge_index, batch.a_index]
         model.update_param(params)
 
