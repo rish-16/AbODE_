@@ -551,7 +551,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         params = [batch.edge_index, batch.a_index]
         model.update_param(params)
 
-        print (batch.x.device, batch.y.device, batch.edge_index.device, batch.a_index.device)
+        print (batch.x.device, batch.y.device, batch.edge_index.device, batch.a_index.device, "time", time.device)
 
         options = {
             'dtype': torch.float64,
