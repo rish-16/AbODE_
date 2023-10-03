@@ -539,13 +539,14 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
     RMSD_test_c = []    
 
     for i, batch in enumerate(loader):
-        batch = batch.to(device)
-        params = [batch.edge_index, batch.a_index]
         model.update_param(params)
         pos_emb = cyclic_positional_encoding(batch.a_index.view(-1), d=pos_emb_dim)
         # x = torch.cat([batch.x, pos_emb], dim=1)
         # x = torch.cat([1/55 * torch.ones(batch.y.size(0), 55).to(device), batch.x[:, 55:], pos_emb], dim=1)
         x = torch.cat([batch.x[:, 55:58], pos_emb], dim=1)
+        batch.x = x
+        batch = batch.to(device)
+        params = [batch.edge_index, batch.a_index]
 
         options = {
             'dtype': torch.float64,

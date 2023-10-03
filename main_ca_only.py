@@ -48,12 +48,10 @@ for epoch in range(EPOCHS):
     model.train()
     for idx, batch_data in enumerate(train_loader):
         # batch_data is a pyg.data.DataBatch object
-        batch_data = batch_data.to(device)
+        # batch_data = batch_data.to(device)
         optim.zero_grad()
 
         # print (batch_data.edge_index.shape, batch_data.edge_index.max(), batch_data.edge_index.min())
-        params_list = [batch_data.edge_index, batch_data.a_index]
-        model.update_param(params_list)
         # print (model.edge_index.shape, model.edge_index.max(), model.edge_index.min())
 
         options = {
@@ -67,7 +65,11 @@ for epoch in range(EPOCHS):
         pos_emb = peptide_utils.cyclic_positional_encoding(batch_data.a_index.view(-1), d=pos_emb_dim).to(device)
         # batch_data.x = torch.cat([1/55 * torch.ones(batch_data.y.size(0), 55).to(device), batch_data.x[:, 55:], pos_emb], dim=1)
         batch_data.x = torch.cat([batch_data.x[:, 55:58], pos_emb], dim=1)
-        batch_data.x = batch_data.x.to(device)
+        batch_data = batch_data.to(device)
+
+        params_list = [batch_data.edge_index, batch_data.a_index]
+        model.update_param(params_list)
+
         y_pd = odeint(
             model, batch_data.x, t, 
             method="adaptive_heun", 
