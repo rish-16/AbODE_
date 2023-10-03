@@ -146,6 +146,7 @@ class PeptODE_uncond(nn.Module):
         
 
     def forward(self, t, data):
+        print ("t", t.device)
         data = data.to(t.device)
         # Node_label, Node_coord  = data[:,:55], data[:,55:58]
         Node_coord  = data[:,0:3]
