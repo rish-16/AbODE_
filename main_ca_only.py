@@ -69,7 +69,7 @@ for epoch in range(EPOCHS):
         batch_data.x = batch_data.x.to(device)
         y_pd = odeint(
             model, batch_data.x, t, 
-            method="dopri8", 
+            method="adaptive_heun", 
             rtol=1e-5, atol=1e-5,
             options=options,
             # use_adjoint=True

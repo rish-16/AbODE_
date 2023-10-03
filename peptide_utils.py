@@ -555,7 +555,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         
         y_pd = odeint(
             model, x, time, 
-            method="dopri8", 
+            method="adaptive_heun", 
             rtol=1e-5, atol=1e-5,
             options=options,
             # use_adjoint=True
