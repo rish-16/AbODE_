@@ -34,7 +34,7 @@ def get_cremp_data(CREMP_PATH):
             print (pdb, len(all_conf_coords))
             for conf_coords in all_conf_coords:
                 coords_n, coords_ca, coords_c = conf_coords
-                combined_coords = torch.from_numpy(np.concatenate([coords_n, coords_ca, coords_c], axis=1)) # (N_res, 9)
+                # combined_coords = torch.from_numpy(np.concatenate([coords_n, coords_ca, coords_c], axis=1)) # (N_res, 9)
 
                 _, input_rand_coords = peptide_utils.convert_coords_to_polar(coords_n, coords_ca, coords_c)
                 # final_target_features_only_coords = torch.cat([ohe_aa, coords_ca], dim=1)
@@ -66,7 +66,7 @@ def get_cremp_data(CREMP_PATH):
     return final_data, size_dist
 
 if __name__ == "__main__":
-    CREMP_PATH = "../cremp/"
+    CREMP_PATH = "./pickle/"
     print (CREMP_PATH)
     final_data, size_dist = get_cremp_data(CREMP_PATH)
     print (len(final_data))

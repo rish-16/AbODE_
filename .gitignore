@@ -8,3 +8,4 @@ cremp_pyg_data_small.pt
 cremp_pyg_data_small_coordsonly.pt
 peptode_cremp_ckpt_*/
 *.pt
+pickle.tar.gz

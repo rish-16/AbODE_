@@ -556,8 +556,8 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
 
         first_residue = batch.first_res
 
-        pred_coord = y_pd[:,0:3].cpu().detach().numpy().reshape(-1, 3)
-        truth_coord = y_truth[:,0:3].cpu().detach().numpy().reshape(-1, 3)
+        pred_coord = y_pd[:,55:58].cpu().detach().numpy().reshape(-1, 3)
+        truth_coord = y_truth[:,55:58].cpu().detach().numpy().reshape(-1, 3)
         # first_residue_coord = first_residue.cpu().detach().numpy().reshape(-1, 3)
 
         # rmsd_N = kabsch_rmsd(pred_coord[:][:,0][:], truth_coord[:][:,0][:])
