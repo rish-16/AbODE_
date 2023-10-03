@@ -26,7 +26,7 @@ cremp_data = torch.load("cremp_data_ca_only.pt")
 print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
-peptide_data_train, peptide_data_test = cremp_data[:30000], cremp_data[train_size:][:70] # test size of 50 peptides
+peptide_data_train, peptide_data_test = random.sample(cremp_data, k=30000), cremp_data[train_size:][:70] # test size of 50 peptides
 
 rog_ca = {
     4: [],
@@ -44,6 +44,6 @@ for peptide in peptide_data_train:
     else:
         rog_ca[int(N_atoms)] = [rog]
 
-for key, val in rog_ca:
+for key, val in rog_ca.items():
     val = np.array(val).reshape(-1, 1).mean(axis=0)[0]
     print (key, val)
