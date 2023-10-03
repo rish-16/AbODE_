@@ -170,6 +170,7 @@ class PeptODE_uncond(nn.Module):
 
         Node_coord = Node_coord.view(-1, 3)
         r_ij = torch.norm(Node_coord[Edge_index[0]] - Node_coord[Edge_index[1]], dim=1).view(-1, 1).float().to(data.device) # [E, 1])
+        Edge_index = Edge_index.to(data.device)
         
         dx = data.float()
         # h = dx.float()
