@@ -23,7 +23,7 @@ cremp_data = torch.load("cremp_data_ca_only.pt")
 print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
-peptide_data_train, peptide_data_test = cremp_data[:50000], cremp_data[train_size:][:70] # test size of 50 peptides
+peptide_data_train, peptide_data_test = cremp_data[:30000], cremp_data[train_size:][:70] # test size of 50 peptides
 print (peptide_data_train[0])
 train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=90)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
@@ -38,7 +38,7 @@ optim = torch.optim.Adam(model.parameters())
 
 t_begin = 0
 t_end = 1
-t_nsamples = 200
+t_nsamples = 174
 t_space = np.linspace(t_begin, t_end, t_nsamples)
 t = torch.tensor(t_space).to(device)
 
@@ -65,6 +65,7 @@ for epoch in range(EPOCHS):
         pos_emb = peptide_utils.cyclic_positional_encoding(batch_data.a_index.view(-1), d=pos_emb_dim)
         # batch_data.x = torch.cat([1/55 * torch.ones(batch_data.y.size(0), 55).to(device), batch_data.x[:, 55:], pos_emb], dim=1)
         batch_data.x = torch.cat([batch_data.x[:, 55:58], pos_emb], dim=1)
+        batch_data.y = batch_data.y[:, 55:58]
         batch_data = batch_data.to(device)
 
         params_list = [batch_data.edge_index, batch_data.a_index]
@@ -85,13 +86,16 @@ for epoch in range(EPOCHS):
 
         epoch_loss += loss.cpu().detach().item()
         print (f"Epoch: {epoch} | Step: {idx}")
+        break
 
     print (f"epoch: {epoch} | train loss: {epoch_loss:.5f}")
     if epoch % 20 == 0:
         eval_metrics = peptide_utils.evaluate_model_ca_only(model, test_loader, device, odeint, time=t, pos_emb_dim=pos_emb_dim)
         pprint (eval_metrics, indent=2)
 
-        torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_{epoch}.pt")
-        torch.save(eval_metrics, f"peptode_cremp_ckpt_catraining/peptode_cremp_metrics_epoch_{epoch}.pt")
+        # torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_{epoch}.pt")
+        # torch.save(eval_metrics, f"peptode_cremp_ckpt_catraining/peptode_cremp_metrics_epoch_{epoch}.pt")
 
-torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_final.pt")
+    break
+
+# torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_final.pt")

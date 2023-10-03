@@ -544,6 +544,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         # x = torch.cat([1/55 * torch.ones(batch.y.size(0), 55).to(device), batch.x[:, 55:], pos_emb], dim=1)
         x = torch.cat([batch.x[:, 0:3], pos_emb], dim=1)
         batch.x = x
+        y_truth = batch.y[:, :55:58]
         batch = batch.to(device)
         params = [batch.edge_index, batch.a_index]
         model.update_param(params)
@@ -563,7 +564,6 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         )
 
         y_pd = y_pd[-1] # get final timestep z(T)
-        y_truth = batch.y
         
         # pred_labels = y_pd[:, :55].view(-1, 55)
         # truth_labels = y_truth[:, :55].view(-1, 55)

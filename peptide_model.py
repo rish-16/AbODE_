@@ -174,7 +174,9 @@ class PeptODE_uncond(nn.Module):
         dx = data.float()
         # h = dx.float()
         tt = torch.ones_like(dx[:, :1]) * t
+        tt = tt.to(data.device)
         dx_final = torch.cat([tt.float(), dx], 1)
+        dx_final = dx_final.to(data.device)
         
         for l,layer in enumerate(self.layer_mlp):
             dx_final = layer(dx_final, edge_index=Edge_index, edge_attr=r_ij)
