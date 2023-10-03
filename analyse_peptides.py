@@ -5,6 +5,8 @@ import os
 from rdkit.Chem import Descriptors3D
 import pickle as pkl
 
+from peptide_utils import radgyr
+
 # PATH = "generated_cremp_peptides_lossv3/"
 # contents = os.listdir(PATH)
 
