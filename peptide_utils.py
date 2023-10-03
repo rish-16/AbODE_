@@ -507,7 +507,10 @@ def evaluate_model_coordsonly(model, loader, device, odeint, time):
 
     return metrics    
 
-def radgyr(coordinates, center_of_mass, masses):
+def get_center_of_mass(coords, weights):
+    return np.einsum('ij,ij->j',coords,weights[:, None]) / weights.sum()
+
+def radgyr(coordinates, pooled):
     # coordinates change for each frame
     # coordinates = atomgroup.positions
     # https://github.com/MDAnalysis/mdanalysis/blob/427f1a7adf063112ad80aa33441821555f4050ae/package/MDAnalysis/topology/tables.py#L205
@@ -515,9 +518,12 @@ def radgyr(coordinates, center_of_mass, masses):
     nitrogen_mass = 14.00700
     oxygen_mass = 15.99900
     # total_mass = N_atoms_in_molecule * carbon_mass
+    total_mass = pooled * carbon_mass
+    weight_arr = np.array([carbon_mass for _ in range(pooled)])
+    com = get_center_of_mass(coordinates, weight_arr)
     
     # get squared distance from center
-    ri_sq = (coordinates - center_of_mass)**2
+    ri_sq = (coordinates - com)**2
     # sum the unweighted positions
     sq = np.sum(ri_sq, axis=1)
     sq_x = np.sum(ri_sq[:,[1,2]], axis=1) # sum over y and z
@@ -543,6 +549,7 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
     RMSD_test_ca = []
     RMSD_test_ca_cart = []
     RMSD_test_c = []    
+    rog_ca = []
 
     time = time.to(device)
 
@@ -621,15 +628,17 @@ def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
         # ca_com = ca_coords.mean()
         carbon_ones = torch.ones(x.size(0), 1)
         pooled_carbon_ones = tg.nn.global_add_pool(carbon_ones, batch.batch.cpu().detach())
-        print (pooled_carbon_ones)
-        # rog = radgyr(pred_coord, center_of_mass, batch.batch.cpu().detach().numpy())
+        pooled_carbon_ones = pooled_carbon_ones.view(-1,1).item()
+        rog = radgyr(pred_coord, center_of_mass, pooled_carbon_ones)
+        rog_ca.append(rog)
 
     metrics = {
         # 'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
         # 'std_perplexity': np.array(perplexity).reshape(-1, 1).std(axis=0)[0],
         'mean_rmsd': np.array(rmsd_pred).reshape(-1, 1).mean(axis=0)[0],
         'std_rmsd': np.array(rmsd_pred).reshape(-1, 1).std(axis=0)[0],
-        'mean_rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0]
+        'mean_rmsd_ca': np.array(RMSD_test_ca).reshape(-1, 1).mean(axis=0)[0],
+        'mean_rog': np.array(rog_ca).reshape(-1, 1).mean(axis=0)[0]
     }
 
     return metrics        
@@ -712,8 +721,10 @@ def evaluate_model_catraining_only(model, loader, device, odeint, time, pos_emb_
 
         # carbon_mass = 12
         # ca_coords = pred_coord
-        # ca_com = ca_coords.mean()
-        # rog = radgyr(pred_coord)
+        # ca_com = y_pd[:,0:3].cpu().detach().numpy().mean()
+        # rog = radgyr(pred_coord, ca_com, pooled)
+# 
+        # rog_ca.append(rog)
 
     metrics = {
         # 'mean_perplexity': np.array(perplexity).reshape(-1, 1).mean(axis=0)[0],
