@@ -91,7 +91,7 @@ for epoch in range(EPOCHS):
         eval_metrics = peptide_utils.evaluate_model_ca_only(model, test_loader, device, odeint, time=t, pos_emb_dim=pos_emb_dim)
         pprint (eval_metrics, indent=2)
 
-#         torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_{epoch}.pt")
-#         torch.save(eval_metrics, f"peptode_cremp_ckpt_catraining/peptode_cremp_metrics_epoch_{epoch}.pt")
+        torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_{epoch}.pt")
+        torch.save(eval_metrics, f"peptode_cremp_ckpt_catraining/peptode_cremp_metrics_epoch_{epoch}.pt")
 
-# torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_final.pt")
+torch.save(model, f"peptode_cremp_ckpt_catraining/peptode_cremp_model_epoch_final.pt")
