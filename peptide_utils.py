@@ -142,6 +142,23 @@ def loss_function_vm_with_side_chains_v3(y_pred,y_true):
 
 def loss_ca_only(y_pred, y_true):
     kappa = 10
+    # pred_labels = y_pred[:,:55].view(-1,55)
+    # truth_labels = y_true[:,:55].view(-1,55)
+    
+    # celoss = nn.CrossEntropyLoss()
+    # loss_ce = celoss(pred_labels,truth_labels)
+    
+    pred_coords = y_pred[:,0:3].view(-1,3)
+    true_coords = y_true[:,0:3].view(-1,3)
+
+    ca_loss = nn.MSELoss(reduction="mean")
+    ca_loss_val = ca_loss(pred_coords, true_coords)
+    
+    total_loss = ca_loss_val
+    
+    return total_loss    
+
+def loss_catraining_only(y_pred, y_true):
     pred_labels = y_pred[:,:55].view(-1,55)
     truth_labels = y_true[:,:55].view(-1,55)
     
