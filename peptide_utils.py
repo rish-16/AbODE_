@@ -528,7 +528,7 @@ def radgyr(coordinates, center_of_mass, masses, total_mass=None):
     return np.sqrt(rog_sq)    
 
 def evaluate_model_ca_only(model, loader, device, odeint, time, pos_emb_dim):
-    model.eval()
+    # model.eval()
     
     perplexity = []
     calpha_rmsd = []
