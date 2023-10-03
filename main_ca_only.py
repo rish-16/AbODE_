@@ -1,4 +1,4 @@
-import torch
+import torch, random
 import torch.nn as nn
 import torch_geometric as tg
 import torchdiffeq as tde
@@ -23,8 +23,7 @@ cremp_data = torch.load("cremp_data_ca_only.pt")
 print ("Loaded dataset ...")
 n_instances = len(cremp_data)
 train_size = int(0.8 * n_instances)
-peptide_data_train, peptide_data_test = cremp_data[:30000], cremp_data[train_size:][:70] # test size of 50 peptides
-print (peptide_data_train[0])
+peptide_data_train, peptide_data_test = random.sample(cremp_data, k=30000), cremp_data[train_size:][:70] # test size of 50 peptides
 train_loader = tg.loader.DataLoader(peptide_data_train, batch_size=90, shuffle=True)
 test_loader = tg.loader.DataLoader(peptide_data_test, batch_size=1)
 
